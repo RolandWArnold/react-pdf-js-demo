@@ -45,9 +45,6 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
 
     return () => {
       pdfManager?.unmount();
-      if (blobUrl) {
-        URL.revokeObjectURL(blobUrl);
-      }
     };
   }, [blobUrl, pdfManager, isLoading]);
 
