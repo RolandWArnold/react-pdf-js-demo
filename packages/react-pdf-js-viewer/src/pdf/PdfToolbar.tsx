@@ -1,9 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import type { FunctionComponent } from 'react';
-import type { ToolbarProps } from './ToolbarInterface';import '../css/PdfToolbar.css';
-import searchsvg from '../assets/search.svg';
-import previousIconSvg from '../assets/findbarButton-previous.svg';
-import nextIconSvg from '../assets/findbarButton-next.svg';
+import type { ToolbarProps } from './ToolbarInterface';
+import '../css/PdfToolbar.css';
 import { PDFFindBar } from './PdfFindBar'; // Import the class
 
 export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
@@ -11,19 +9,6 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   fileName,
   pdfManager,
   jumpToPage,
-  // filename,
-  // file,
-  // scrolledIndex,
-  // numPages,
-  // scaleText,
-  // nextPage,
-  // prevPage,
-  // handleZoomIn,
-  // handleZoomOut,
-  // goToPage,
-  // setZoomLevel,
-  // zoomInEnabled,
-  // zoomOutEnabled,
 }) => {
   const [numPages, setNumPages] = useState(1);
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
@@ -48,12 +33,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   const findMsgRef = useRef<HTMLSpanElement>(null);
   const findBarInstanceRef = useRef<PDFFindBar | null>(null);
 
-  // const handleZoomSelection = (zoom: string) => {
-  //   // setZoomLevel(zoom);
-  //   // setZoomPopoverOpen(false);
-  // };
-
-  const [inputValue, setInputValue] = useState(`${currentPageNumber}`); // useState(`${scrolledIndex + 1}`);
+  const [inputValue, setInputValue] = useState(`${currentPageNumber}`);
 
   const toolbarRefInDom = useCallback((node: HTMLDivElement | null) => {
     setIsToolbarRendered(false);
@@ -125,6 +105,8 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
 
   // This effect creates and destroys the PDFFindBar instance
   useEffect(() => {
+    // We now wait for pdfManager.eventBus to exist.
+    // This ensures initViewer() has run.
     if (pdfManager
       && pdfManager.eventBus
       && findBarRef.current
@@ -163,9 +145,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
         findBarInstanceRef.current = null;
       };
     }
-    // This effect should re-run if the pdfManager instance changes (e.g. on remount)
-    // The refs should be stable.
-  }, [pdfManager]);
+  }, [pdfManager, numPages]);
 
 
 
@@ -193,25 +173,61 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   };
 
   return (
+    // This container is now relative, allowing the findbar
+    // to be positioned absolutely inside it.
     <div className="pdf-viewer-toolbar-container" ref={toolbarRefInDom}>
-      <div className="pdf-viewer-toolbar-file-info">
-        <span className="pdf-viewer-toolbar-border-indicator" title={fileName}>
-          {showFileName ? fileName : ''}
-        </span>
+      <div className="pdf-viewer-toolbar-main">
+        <div className="pdf-viewer-toolbar-file-info">
+          <span title={fileName}>
+            {showFileName ? fileName : ''}
+          </span>
+        </div>
+
+        {numPages > 0 && (
+          <>
+            <div className="pdf-viewer-toolbar-control">
+              <button onClick={pdfManager?.handlePreviousPage} disabled={!canGoToPreviousPage}>
+                Prev
+              </button>
+              <input
+                value={currentPageNumber <= 0 ? '' : `${currentPageNumber}`}
+                type="number"
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+              />
+              <span>/ {numPages}</span>
+              <button onClick={pdfManager?.handleNextPage} disabled={!canGoToNextPage}>
+                Next
+              </button>
+            </div>
+
+            <div className="pdf-viewer-toolbar-zoom-control">
+              <button onClick={handleZoomOut} disabled={!canZoomOut}>
+                -
+              </button>
+              <span>{currentScale}%</span>
+              <button onClick={handleZoomIn} disabled={!canZoomIn}>
+                +
+              </button>
+            </div>
+            <div className="pdf-viewer-toolbar-right">
+              <button
+                ref={findButtonRef}
+                className="pdf-viewer-toolbar-find-toggle"
+                title="Find in Document"
+              >
+                <span>Find</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
-      <button
-        ref={findButtonRef}
-        className="toolbarButton pdf-viewer-toolbar-find-button"
-        title="Find in Document"
-      >
-        <img src={searchsvg} />
-      </button>
-      <div className="pdf-viewer-find-bar hidden doorHanger" ref={findBarRef}>
+      <div id="findbar" className="hidden doorHanger" ref={findBarRef}>
         <div id="findbarInputContainer">
           <span className="loadingInput end">
             <input
               ref={findInputRef}
-              className="pdf-viewer-find-input toolbarField"
+              className="toolbarField" /* This class is styled by pdf_viewer.css */
               title="Find"
               placeholder="Find in document…"
               data-l10n-id="pdfjs-find-input"
@@ -221,20 +237,20 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
           <div className="splitToolbarButton">
             <button
               ref={findPreviousRef}
-              className="toolbarButton"
+              className="toolbarButton" /* This class is styled by pdf_viewer.css */
               title="Find the previous occurrence of the phrase"
               data-l10n-id="pdfjs-find-previous-button"
             >
-              <img src={previousIconSvg} />
+              <span>Previous</span>
             </button>
             <div className="splitToolbarButtonSeparator"></div>
             <button
               ref={findNextRef}
-              className="toolbarButton"
+              className="toolbarButton" /* This class is styled by pdf_viewer.css */
               title="Find the next occurrence of the phrase"
               data-l10n-id="pdfjs-find-next-button"
             >
-              <img src={nextIconSvg} />
+              <span>Next</span>
             </button>
           </div>
         </div>
@@ -279,43 +295,12 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
         <div id="findbarMessageContainer" aria-live="polite">
           <span
             ref={findResultsCountRef}
-            className="pdf-viewer-find-results-count toolbarLabel"
+            className="findResultsCount toolbarLabel" /* Use class from pdf_viewer.css */
           ></span>
-          <span ref={findMsgRef} className="pdf-viewer-find-msg toolbarLabel"></span>
+          <span ref={findMsgRef} className="findMsg toolbarLabel"></span> {/* Use class from pdf_viewer.css */ }
         </div>
       </div>
-
-      {numPages > 0 && (
-        <>
-          <div className="pdf-viewer-toolbar-control">
-            <div className="pdf-viewer-toolbar-centering-wrapper">
-              <button onClick={pdfManager?.handlePreviousPage} disabled={!canGoToPreviousPage}>
-                Prev
-              </button>
-              <input
-                value={currentPageNumber <= 0 ? '' : `${currentPageNumber}`}
-                type="number"
-                onChange={handleChange}
-                onKeyDown={handleKeyDown}
-              />
-              <span>/ {numPages}</span>
-              <button onClick={pdfManager?.handleNextPage} disabled={!canGoToNextPage}>
-                Next
-              </button>
-            </div>
-          </div>
-
-          <div className="pdf-viewer-toolbar-zoom-control">
-            <button onClick={handleZoomOut} disabled={!canZoomOut}>
-              -
-            </button>
-            <span>{currentScale}%</span>
-            <button onClick={handleZoomIn} disabled={!canZoomIn}>
-              +
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 };
+

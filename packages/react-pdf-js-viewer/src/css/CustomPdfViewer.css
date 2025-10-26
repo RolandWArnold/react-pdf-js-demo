@@ -9,8 +9,8 @@
 .pdfViewer {
   position: absolute;
   width: 100%;
-  top: 57px;
-  height: calc(var(--copilot-chat-pane-full-height, 100vh) - 57px);
+  top: 55px;
+  height: calc(var(--copilot-chat-pane-full-height, 100vh) - 55px);
   overflow: auto;
   background: #f1f5f9;
 }

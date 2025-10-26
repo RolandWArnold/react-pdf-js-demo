@@ -1,7 +1,7 @@
 /* packages/react-pdf-js-viewer/src/style.css */
 
 /* Import the PDF.js base styles */
-@import 'pdfjs-dist/web/pdf_viewer.css';
+/* @import 'pdfjs-dist/web/pdf_viewer.css'; */
 
 /* Import your component styles */
 @import './css/CustomPdfViewer.css';

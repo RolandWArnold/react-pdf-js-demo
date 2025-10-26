@@ -112,32 +112,12 @@ class PdfManager {
 
   loadPdf = async () => {
     console.log('#######loadPdf called');
-    const loadingTask = pdfjsLib.getDocument(this.blobUrl);
+    const loadingTask = pdfjsLib.getDocument(this.blobUrl!);
     this.data!.loadingTask = loadingTask;
     const pdfDoc = await loadingTask.promise;
     this.pdfViewer!.setDocument(pdfDoc);
     this.linkService!.setDocument(pdfDoc);
     this.findController!.setDocument(pdfDoc);
-
-    // let getPDFManagerId;
-    // const itr1 = PdfManager.instances.keys();
-    // for (const value of itr1) {
-    //   getPDFManagerId = value;
-    // }
-    // const options = {
-    //   bar: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-bar`),
-    //   toggleButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find`),
-    //   findField: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-input`),
-    //   highlightAllCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-highlight-all`),
-    //   caseSensitiveCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-match-case`),
-    //   entireWordCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-entire-word`),
-    //   findMsg: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-msg`),
-    //   findResultsCount: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-results-count`),
-    //   findPreviousButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-previous`),
-    //   findNextButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-next`),
-    //   matchDiacriticsCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-match-diacritics`),
-    // };
-    // this.pdfFindBar = new PDFFindBar(options, this.eventBus);
 
     this.eventBus!.on('pagesinit', this.onPagesInit);
     this.eventBus!.on('pagerendered', this.onPageRendered);
@@ -145,8 +125,6 @@ class PdfManager {
     this.eventBus!.on('pagesdestroy', this.onPagesDestroy);
     this.eventBus!.on('pagechanging', this.onPageChanging);
     this.eventBus!.on('textlayerrendered', this.onTextLayerRendered);
-    // this.eventBus!._on('updatefindcontrolstate', this.webViewerUpdateFindControlState);
-    // this.eventBus!._on('updatefindmatchescount', this.webViewerUpdateFindMatchesCount);
     window.addEventListener('resize', this.updateScale);
   };
 
@@ -164,28 +142,26 @@ class PdfManager {
   }
 
   webViewerUpdateFindMatchesCount = ({ matchesCount }: matchCount) => {
-    // this.pdfFindBar!.updateResultsCount(matchesCount);
     this.pdfFindBar?.updateResultsCount(matchesCount);
   };
 
   webViewerUpdateFindControlState = ({ state, previous, matchesCount }: findControlState) => {
-    // this.pdfFindBar!.updateUIState(state, previous, matchesCount);
     this.pdfFindBar?.updateUIState(state, previous, matchesCount);
   };
 
   unmount = () => {
     console.log('#######unmount called');
     this.cancelInit && clearTimeout(this.cancelInit);
-    this.eventBus!.off('textlayerrendered', this.onTextLayerRendered);
+    this.eventBus?.off('textlayerrendered', this.onTextLayerRendered); // Check if eventBus exists
     window.removeEventListener('resize', this.updateScale);
-    this.eventBus!.off('pagesdestroy', this.onPagesDestroy);
+    this.eventBus?.off('pagesdestroy', this.onPagesDestroy);
     this.unregisterFindBar(); // Clean up find bar listeners
     this.data?.loadingTask?.destroy();
-    this.pdfViewer!.pdfDocument?.destroy();
-    this.eventBus!.off('pagesinit', this.onPagesInit);
-    this.eventBus!.off('pagerendered', this.onPageRendered);
-    this.eventBus!.off('pagesloaded', this.onPagesLoaded);
-    this.eventBus!.off('pagechanging', this.onPageChanging);
+    this.pdfViewer?.pdfDocument?.destroy();
+    this.eventBus?.off('pagesinit', this.onPagesInit);
+    this.eventBus?.off('pagerendered', this.onPageRendered);
+    this.eventBus?.off('pagesloaded', this.onPagesLoaded);
+    this.eventBus?.off('pagechanging', this.onPageChanging);
   };
 
   registerHandlers = ({
@@ -222,27 +198,27 @@ class PdfManager {
   };
 
   get eventBus() {
-    if (!this.data) throw Error();
+    if (!this.data) return undefined;
     return this.data.eventBus;
   }
 
   get linkService() {
-    if (!this.data) throw Error();
+    if (!this.data) return undefined;
     return this.data.linkService;
   }
 
   get pdfViewer() {
-    if (!this.data) throw Error();
+    if (!this.data) return undefined;
     return this.data.pdfViewer;
   }
 
   get findController() {
-    if (!this.data) throw Error();
+    if (!this.data) return undefined;
     return this.data.findController;
   }
 
   get activeHighlight() {
-    if (!this.data) throw Error();
+    if (!this.data) return undefined;
     return this.data.activeHighlight;
   }
 
@@ -251,7 +227,7 @@ class PdfManager {
   }
 
   get blobUrl() {
-    if (!this.data) throw Error();
+    if (!this.data) return undefined;
     return this.data.blobUrl;
   }
 

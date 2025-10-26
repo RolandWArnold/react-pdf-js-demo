@@ -64,7 +64,12 @@ class PDFFindBar {
     // Add event listeners using bound class methods
     this.toggleButton?.addEventListener('click', this.toggle);
     this.findField?.addEventListener('input', this.onFindInput);
-    this.bar?.addEventListener('keydown', this.onBarKeydown);
+
+    // *** MODIFIED ***
+    // Attach keydown listener directly to the find field
+    this.findField?.addEventListener('keydown', this.onFindKeydown);
+    // *** END MODIFIED ***
+
     this.findPreviousButton?.addEventListener('click', this.onFindPrevious);
     this.findNextButton?.addEventListener('click', this.onFindNext);
     this.highlightAll?.addEventListener('click', this.onHighlightAll);
@@ -197,7 +202,7 @@ class PDFFindBar {
   destroy() {
     this.toggleButton?.removeEventListener('click', this.toggle);
     this.findField?.removeEventListener('input', this.onFindInput);
-    this.bar?.removeEventListener('keydown', this.onBarKeydown);
+    this.findField?.removeEventListener('keydown', this.onFindKeydown);
     this.findPreviousButton?.removeEventListener('click', this.onFindPrevious);
     this.findNextButton?.removeEventListener('click', this.onFindNext);
     this.highlightAll?.removeEventListener('click', this.onHighlightAll);
@@ -211,15 +216,17 @@ class PDFFindBar {
     this.dispatchEvent('');
   };
 
-  private onBarKeydown = (e: KeyboardEvent) => {
+  private onFindKeydown = (e: KeyboardEvent) => {
     switch (e.key) {
       case 'Enter':
-        if (e.target === this.findField) {
-          this.dispatchEvent('again', e.shiftKey);
-        }
+        // Find next (or previous on shift-enter)
+        this.dispatchEvent('again', e.shiftKey);
+        e.preventDefault();
         break;
       case 'Escape':
+        // Close the find bar
         this.close();
+        e.preventDefault();
         break;
     }
   };
