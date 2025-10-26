@@ -60,51 +60,17 @@ class PDFFindBar {
     this.findPreviousButton = options?.findPreviousButton;
     this.findNextButton = options?.findNextButton;
     this.eventBus = eventBus;
-    // Add event listeners to the DOM elements.
-    this.toggleButton?.addEventListener('click', () => {
-      this.toggle();
-    });
 
-    this.findField?.addEventListener('input', () => {
-      this.dispatchEvent('');
-    });
-
-    this.bar?.addEventListener('keydown', (e: KeyboardEvent) => {
-      switch (e.key) {
-        case 'Enter': // Enter
-          if (e.target === this.findField) {
-            this.dispatchEvent('again', e.shiftKey);
-          }
-          break;
-        case 'Escape': // Escape
-          this.close();
-          break;
-      }
-    });
-
-    this.findPreviousButton?.addEventListener('click', () => {
-      this.dispatchEvent('again', true);
-    });
-
-    this.findNextButton?.addEventListener('click', () => {
-      this.dispatchEvent('again', false);
-    });
-
-    this.highlightAll?.addEventListener('click', () => {
-      this.dispatchEvent('highlightallchange');
-    });
-
-    this.caseSensitive?.addEventListener('click', () => {
-      this.dispatchEvent('casesensitivitychange');
-    });
-
-    this.entireWord?.addEventListener('click', () => {
-      this.dispatchEvent('entirewordchange');
-    });
-
-    this.matchDiacritics?.addEventListener('click', () => {
-      this.dispatchEvent('diacriticmatchingchange');
-    });
+    // Add event listeners using bound class methods
+    this.toggleButton?.addEventListener('click', this.toggle);
+    this.findField?.addEventListener('input', this.onFindInput);
+    this.bar?.addEventListener('keydown', this.onBarKeydown);
+    this.findPreviousButton?.addEventListener('click', this.onFindPrevious);
+    this.findNextButton?.addEventListener('click', this.onFindNext);
+    this.highlightAll?.addEventListener('click', this.onHighlightAll);
+    this.caseSensitive?.addEventListener('click', this.onCaseSensitive);
+    this.entireWord?.addEventListener('click', this.onEntireWord);
+    this.matchDiacritics?.addEventListener('click', this.onMatchDiacritics);
   }
 
   reset() {
@@ -209,14 +175,6 @@ class PDFFindBar {
     this.toggleExpandedBtn(this.toggleButton, false, this.bar);
   }
 
-  toggle() {
-    if (this.opened) {
-      this.close();
-    } else {
-      this.open();
-    }
-  }
-
   resizeObserverCallback() {
     const { bar } = this;
     // The find bar has an absolute position and thus the browser extends
@@ -235,6 +193,68 @@ class PDFFindBar {
       bar.classList.add('wrapContainers');
     }
   }
+
+  destroy() {
+    this.toggleButton?.removeEventListener('click', this.toggle);
+    this.findField?.removeEventListener('input', this.onFindInput);
+    this.bar?.removeEventListener('keydown', this.onBarKeydown);
+    this.findPreviousButton?.removeEventListener('click', this.onFindPrevious);
+    this.findNextButton?.removeEventListener('click', this.onFindNext);
+    this.highlightAll?.removeEventListener('click', this.onHighlightAll);
+    this.caseSensitive?.removeEventListener('click', this.onCaseSensitive);
+    this.entireWord?.removeEventListener('click', this.onEntireWord);
+    this.matchDiacritics?.removeEventListener('click', this.onMatchDiacritics);
+    this.resizeObserver.disconnect();
+  }
+
+  private onFindInput = () => {
+    this.dispatchEvent('');
+  };
+
+  private onBarKeydown = (e: KeyboardEvent) => {
+    switch (e.key) {
+      case 'Enter':
+        if (e.target === this.findField) {
+          this.dispatchEvent('again', e.shiftKey);
+        }
+        break;
+      case 'Escape':
+        this.close();
+        break;
+    }
+  };
+
+  private onFindPrevious = () => {
+    this.dispatchEvent('again', true);
+  };
+
+  private onFindNext = () => {
+    this.dispatchEvent('again', false);
+  };
+
+  private onHighlightAll = () => {
+    this.dispatchEvent('highlightallchange');
+  };
+
+  private onCaseSensitive = () => {
+    this.dispatchEvent('casesensitivitychange');
+  };
+
+  private onEntireWord = () => {
+    this.dispatchEvent('entirewordchange');
+  };
+
+  private onMatchDiacritics = () => {
+    this.dispatchEvent('diacriticmatchingchange');
+  };
+
+  toggle = () => {
+    if (this.opened) {
+      this.close();
+    } else {
+      this.open();
+    }
+  };
 }
 
 export { PDFFindBar };

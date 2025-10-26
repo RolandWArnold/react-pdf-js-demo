@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"],
+    "paths": {
+      "react-pdf-js-viewer": ["../../packages/react-pdf-js-viewer/src/index.ts"],
+      "react-pdf-js-viewer/style.css": ["../../packages/react-pdf-js-viewer/src/style.css"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "../../packages/react-pdf-js-viewer" }]
+}

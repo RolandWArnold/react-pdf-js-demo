@@ -1,0 +1,40 @@
+{
+  "name": "react-pdf-js-viewer",
+  "version": "0.1.0",
+  "private": false,
+  "description": "A React component wrapper for PDF.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "dependencies": {
+    "lodash.debounce": "^4.0.8",
+    "pdfjs-dist": "4.2.67"
+  },
+  "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/react": "^18.2.66",
+    "react": "^18.2.0",
+    "typescript": "^5.2.2",
+    "tsup": "^8.0.2",
+    "glob": "^10.4.1"
+  }
+}

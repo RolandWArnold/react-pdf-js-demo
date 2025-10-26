@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import CustomPdfViewer from "./pdf/CustomPdfViewer";
+import { CustomPdfViewer } from "react-pdf-js-viewer";
 
 export default function App() {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -27,7 +27,6 @@ export default function App() {
   return (
     <div style={{ height: "100vh", width: "100vw" }}>
       <CustomPdfViewer
-        uniqueIdentifier="demo-viewer"
         fileName="sample.pdf"
         blobUrl={blobUrl}
         isLoading={loading}

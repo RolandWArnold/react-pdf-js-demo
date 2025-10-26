@@ -1,49 +1,18 @@
 {
-  "name": "react-pdf-js-demo",
+  "name": "react-pdf-js-viewer-monorepo",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "license": "Apache-2.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
-  },
-  "author": "Roland Arnold",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/RolandWArnold/react-pdf-js-demo"
-  },
-  "homepage": "https://github.com/RolandWArnold/react-pdf-js-demo#README.md",
-  "engines": {
-    "node": ">=18.17"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.1",
-    "@mui/material": "^7.3.2",
-    "lodash.debounce": "^4.0.8",
-    "pdfjs-dist": "^5.4.149",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "demo": "pnpm --filter demo dev",
+    "build:lib": "pnpm --filter react-pdf-js-viewer build",
+    "publish:npm": "pnpm build:lib && pnpm --filter react-pdf-js-viewer publish --no-git-checks"
   },
   "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/react": "^16.3.0",
-    "@types/lodash.debounce": "^4.0.9",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
-    "jsdom": "^27.0.0",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2",
-    "vitest": "^3.2.4"
+    "@changesets/cli": "^2.27.1",
+    "pnpm": "^8.0.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

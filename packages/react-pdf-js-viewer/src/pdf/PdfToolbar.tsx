@@ -1,15 +1,15 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import type { FunctionComponent } from 'react';
-import type { ToolbarProps } from './ToolbarInterface';import './PdfToolbar.css';
+import type { ToolbarProps } from './ToolbarInterface';import '../css/PdfToolbar.css';
 import searchsvg from '../assets/search.svg';
 import previousIconSvg from '../assets/findbarButton-previous.svg';
 import nextIconSvg from '../assets/findbarButton-next.svg';
+import { PDFFindBar } from './PdfFindBar'; // Import the class
 
 export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   showFileName,
   fileName,
   pdfManager,
-  uniqueIdentifier,
   jumpToPage,
   // filename,
   // file,
@@ -34,6 +34,19 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   const [canZoomIn, setCanZoomIn] = useState(true);
   const [isToolbarRendered, setIsToolbarRendered] = useState<boolean>(false);
   const zoomRef = useRef<HTMLDivElement | null>(null);
+
+  const findButtonRef = useRef<HTMLButtonElement>(null);
+  const findBarRef = useRef<HTMLDivElement>(null);
+  const findInputRef = useRef<HTMLInputElement>(null);
+  const findPreviousRef = useRef<HTMLButtonElement>(null);
+  const findNextRef = useRef<HTMLButtonElement>(null);
+  const highlightAllRef = useRef<HTMLInputElement>(null);
+  const matchCaseRef = useRef<HTMLInputElement>(null);
+  const matchDiacriticsRef = useRef<HTMLInputElement>(null);
+  const entireWordRef = useRef<HTMLInputElement>(null);
+  const findResultsCountRef = useRef<HTMLSpanElement>(null);
+  const findMsgRef = useRef<HTMLSpanElement>(null);
+  const findBarInstanceRef = useRef<PDFFindBar | null>(null);
 
   // const handleZoomSelection = (zoom: string) => {
   //   // setZoomLevel(zoom);
@@ -60,12 +73,12 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
       setCanZoomOut,
       setCanZoomIn,
     });
-  }, [fileName]);
+  }, [pdfManager, fileName]);
 
   useEffect(() => {
     setCurrentPageNumber(1);
     setCurrentScale(100);
-  }, [fileName]);
+  }, [pdfManager, fileName]);
 
   useEffect(() => {
     setCanGoToPreviousPage(currentPageNumber > 1);
@@ -92,7 +105,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
       pdfManager?.handleGoToPage(jumpToPage);
       setCurrentPageNumber(jumpToPage);
     }
-  }, [jumpToPage]);
+  }, [jumpToPage, pdfManager]);
 
   useLayoutEffect(() => {
     const handleResize = () => {
@@ -108,7 +121,53 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
       window.removeEventListener('resize', handleResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isToolbarRendered]);
+  }, [isToolbarRendered, pdfManager]);
+
+  // This effect creates and destroys the PDFFindBar instance
+  useEffect(() => {
+    if (pdfManager
+      && pdfManager.eventBus
+      && findBarRef.current
+      && findButtonRef.current
+      && findInputRef.current
+      && findPreviousRef.current
+      && findNextRef.current
+      && highlightAllRef.current
+      && matchCaseRef.current
+      && matchDiacriticsRef.current
+      && entireWordRef.current
+      && findResultsCountRef.current
+      && findMsgRef.current) {
+
+      const options = {
+        bar: findBarRef.current,
+        toggleButton: findButtonRef.current,
+        findField: findInputRef.current,
+        highlightAllCheckbox: highlightAllRef.current,
+        caseSensitiveCheckbox: matchCaseRef.current,
+        entireWordCheckbox: entireWordRef.current,
+        findMsg: findMsgRef.current,
+        findResultsCount: findResultsCountRef.current,
+        findPreviousButton: findPreviousRef.current,
+        findNextButton: findNextRef.current,
+        matchDiacriticsCheckbox: matchDiacriticsRef.current,
+      };
+
+      const findBar = new PDFFindBar(options, pdfManager.eventBus);
+      findBarInstanceRef.current = findBar;
+      pdfManager.registerFindBar(findBar);
+
+      return () => {
+        pdfManager.unregisterFindBar();
+        findBar.destroy();
+        findBarInstanceRef.current = null;
+      };
+    }
+    // This effect should re-run if the pdfManager instance changes (e.g. on remount)
+    // The refs should be stable.
+  }, [pdfManager]);
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -141,17 +200,17 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
         </span>
       </div>
       <button
-        id={`${uniqueIdentifier}-pdf-viewer-find`}
+        ref={findButtonRef}
         className="toolbarButton pdf-viewer-toolbar-find-button"
         title="Find in Document"
       >
         <img src={searchsvg} />
       </button>
-      <div className="pdf-viewer-find-bar hidden doorHanger" id={`${uniqueIdentifier}-pdf-viewer-find-bar`}>
+      <div className="pdf-viewer-find-bar hidden doorHanger" ref={findBarRef}>
         <div id="findbarInputContainer">
           <span className="loadingInput end">
             <input
-              id={`${uniqueIdentifier}-pdf-viewer-find-input`}
+              ref={findInputRef}
               className="pdf-viewer-find-input toolbarField"
               title="Find"
               placeholder="Find in document…"
@@ -161,7 +220,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
           </span>
           <div className="splitToolbarButton">
             <button
-              id={`${uniqueIdentifier}-pdf-viewer-find-previous`}
+              ref={findPreviousRef}
               className="toolbarButton"
               title="Find the previous occurrence of the phrase"
               data-l10n-id="pdfjs-find-previous-button"
@@ -170,7 +229,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
             </button>
             <div className="splitToolbarButtonSeparator"></div>
             <button
-              id={`${uniqueIdentifier}-pdf-viewer-find-next`}
+              ref={findNextRef}
               className="toolbarButton"
               title="Find the next occurrence of the phrase"
               data-l10n-id="pdfjs-find-next-button"
@@ -181,17 +240,17 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
         </div>
 
         <div id="findbarOptionsOneContainer">
-          <input type="checkbox" id={`${uniqueIdentifier}-pdf-viewer-find-highlight-all`} className="toolbarField" />
+          <input type="checkbox" id="pdf-viewer-find-highlight-all" ref={highlightAllRef} className="toolbarField" />
           <label
-            htmlFor={`${uniqueIdentifier}-pdf-viewer-find-highlight-all`}
+            htmlFor="pdf-viewer-find-highlight-all"
             className="toolbarLabel"
             data-l10n-id="pdfjs-find-highlight-checkbox"
           >
             Highlight All
           </label>
-          <input type="checkbox" id={`${uniqueIdentifier}-pdf-viewer-find-match-case`} className="toolbarField" />
+          <input type="checkbox" id="pdf-viewer-find-match-case" ref={matchCaseRef} className="toolbarField" />
           <label
-            htmlFor={`${uniqueIdentifier}-pdf-viewer-find-match-case`}
+            htmlFor="pdf-viewer-find-match-case"
             className="toolbarLabel"
             data-l10n-id="pdfjs-find-match-case-checkbox-label"
           >
@@ -199,17 +258,17 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
           </label>
         </div>
         <div id="findbarOptionsTwoContainer">
-          <input type="checkbox" id={`${uniqueIdentifier}-pdf-viewer-find-match-diacritics`} className="toolbarField" />
+          <input type="checkbox" id="pdf-viewer-find-match-diacritics" ref={matchDiacriticsRef} className="toolbarField" />
           <label
-            htmlFor={`${uniqueIdentifier}-pdf-viewer-find-match-diacritics`}
+            htmlFor="pdf-viewer-find-match-diacritics"
             className="toolbarLabel"
             data-l10n-id="pdfjs-find-match-diacritics-checkbox-label"
           >
             Match Diacritics
           </label>
-          <input type="checkbox" id={`${uniqueIdentifier}-pdf-viewer-find-entire-word`} className="toolbarField" />
+          <input type="checkbox" id="pdf-viewer-find-entire-word" ref={entireWordRef} className="toolbarField" />
           <label
-            htmlFor={`${uniqueIdentifier}-pdf-viewer-find-entire-word`}
+            htmlFor="pdf-viewer-find-entire-word"
             className="toolbarLabel"
             data-l10n-id="pdfjs-find-entire-word-checkbox-label"
           >
@@ -219,10 +278,10 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
 
         <div id="findbarMessageContainer" aria-live="polite">
           <span
-            id={`${uniqueIdentifier}-pdf-viewer-find-results-count`}
+            ref={findResultsCountRef}
             className="pdf-viewer-find-results-count toolbarLabel"
           ></span>
-          <span id={`${uniqueIdentifier}-pdf-viewer-find-msg`} className="pdf-viewer-find-msg toolbarLabel"></span>
+          <span ref={findMsgRef} className="pdf-viewer-find-msg toolbarLabel"></span>
         </div>
       </div>
 

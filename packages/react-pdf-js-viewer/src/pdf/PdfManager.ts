@@ -1,6 +1,7 @@
 import debounce from 'lodash.debounce';
 import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
-import { PDFFindBar } from './PdfFindBar';
+// import { PDFFindBar } from './PdfFindBar';
+import type { PDFFindBar } from './PdfFindBar';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Dispatch, SetStateAction } from 'react';
 type EventBus = typeof EventBus;
@@ -54,22 +55,9 @@ interface findControlState {
 class PdfManager {
   private data: PdfData | undefined;
 
-  private pdfFindBar = new PDFFindBar();
+  private pdfFindBar: PDFFindBar | null = null;
 
-  private constructor() {}
-
-  private static instances: Map<string, PdfManager> = new Map();
-
-  static getInstance(id: string): PdfManager {
-    if (!this.instances.has(id) && id !== '') {
-      this.instances.set(id, new PdfManager());
-    }
-    return this.instances.get(id)!;
-  }
-
-  static destroy(id: string): void {
-    this.instances.delete(id);
-  }
+  public constructor() {}
 
   initViewer = (
     viewerElement: HTMLDivElement,
@@ -124,8 +112,6 @@ class PdfManager {
 
   loadPdf = async () => {
     console.log('#######loadPdf called');
-    // const documentLoadingTask = await pdfjsLib.getDocument(this.blobUrl);
-    // const pdfDoc = await documentLoadingTask.promise;
     const loadingTask = pdfjsLib.getDocument(this.blobUrl);
     this.data!.loadingTask = loadingTask;
     const pdfDoc = await loadingTask.promise;
@@ -133,25 +119,25 @@ class PdfManager {
     this.linkService!.setDocument(pdfDoc);
     this.findController!.setDocument(pdfDoc);
 
-    let getPDFManagerId;
-    const itr1 = PdfManager.instances.keys();
-    for (const value of itr1) {
-      getPDFManagerId = value;
-    }
-    const options = {
-      bar: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-bar`),
-      toggleButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find`),
-      findField: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-input`),
-      highlightAllCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-highlight-all`),
-      caseSensitiveCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-match-case`),
-      entireWordCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-entire-word`),
-      findMsg: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-msg`),
-      findResultsCount: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-results-count`),
-      findPreviousButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-previous`),
-      findNextButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-next`),
-      matchDiacriticsCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-match-diacritics`),
-    };
-    this.pdfFindBar = new PDFFindBar(options, this.eventBus);
+    // let getPDFManagerId;
+    // const itr1 = PdfManager.instances.keys();
+    // for (const value of itr1) {
+    //   getPDFManagerId = value;
+    // }
+    // const options = {
+    //   bar: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-bar`),
+    //   toggleButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find`),
+    //   findField: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-input`),
+    //   highlightAllCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-highlight-all`),
+    //   caseSensitiveCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-match-case`),
+    //   entireWordCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-entire-word`),
+    //   findMsg: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-msg`),
+    //   findResultsCount: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-results-count`),
+    //   findPreviousButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-previous`),
+    //   findNextButton: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-next`),
+    //   matchDiacriticsCheckbox: document.getElementById(`${getPDFManagerId}-pdf-viewer-find-match-diacritics`),
+    // };
+    // this.pdfFindBar = new PDFFindBar(options, this.eventBus);
 
     this.eventBus!.on('pagesinit', this.onPagesInit);
     this.eventBus!.on('pagerendered', this.onPageRendered);
@@ -159,17 +145,32 @@ class PdfManager {
     this.eventBus!.on('pagesdestroy', this.onPagesDestroy);
     this.eventBus!.on('pagechanging', this.onPageChanging);
     this.eventBus!.on('textlayerrendered', this.onTextLayerRendered);
-    this.eventBus!._on('updatefindcontrolstate', this.webViewerUpdateFindControlState);
-    this.eventBus!._on('updatefindmatchescount', this.webViewerUpdateFindMatchesCount);
+    // this.eventBus!._on('updatefindcontrolstate', this.webViewerUpdateFindControlState);
+    // this.eventBus!._on('updatefindmatchescount', this.webViewerUpdateFindMatchesCount);
     window.addEventListener('resize', this.updateScale);
   };
 
+  public registerFindBar(findBar: PDFFindBar) {
+    this.pdfFindBar = findBar;
+    // Now, register the event listeners that update the find bar UI
+    this.eventBus!._on('updatefindcontrolstate', this.webViewerUpdateFindControlState);
+    this.eventBus!._on('updatefindmatchescount', this.webViewerUpdateFindMatchesCount);
+  }
+
+  public unregisterFindBar() {
+    this.eventBus!._off('updatefindcontrolstate', this.webViewerUpdateFindControlState);
+    this.eventBus!._off('updatefindmatchescount', this.webViewerUpdateFindMatchesCount);
+    this.pdfFindBar = null;
+  }
+
   webViewerUpdateFindMatchesCount = ({ matchesCount }: matchCount) => {
-    this.pdfFindBar!.updateResultsCount(matchesCount);
+    // this.pdfFindBar!.updateResultsCount(matchesCount);
+    this.pdfFindBar?.updateResultsCount(matchesCount);
   };
 
   webViewerUpdateFindControlState = ({ state, previous, matchesCount }: findControlState) => {
-    this.pdfFindBar!.updateUIState(state, previous, matchesCount);
+    // this.pdfFindBar!.updateUIState(state, previous, matchesCount);
+    this.pdfFindBar?.updateUIState(state, previous, matchesCount);
   };
 
   unmount = () => {
@@ -178,6 +179,7 @@ class PdfManager {
     this.eventBus!.off('textlayerrendered', this.onTextLayerRendered);
     window.removeEventListener('resize', this.updateScale);
     this.eventBus!.off('pagesdestroy', this.onPagesDestroy);
+    this.unregisterFindBar(); // Clean up find bar listeners
     this.data?.loadingTask?.destroy();
     this.pdfViewer!.pdfDocument?.destroy();
     this.eventBus!.off('pagesinit', this.onPagesInit);

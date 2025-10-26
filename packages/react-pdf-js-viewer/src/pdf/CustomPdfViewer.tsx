@@ -4,10 +4,7 @@ import * as pdfjsLib from 'pdfjs-dist';
 import { PDFViewer, EventBus, PDFLinkService, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import { PdfToolbar } from './PdfToolbar';
 import type { ToolbarProps } from './ToolbarInterface';
-import 'pdfjs-dist/web/pdf_viewer.css';
-import './CustomPdfViewer.css';
 import PdfManager from './PdfManager';
-import { LinearProgress } from '@mui/material';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
@@ -16,7 +13,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.mi
 // }
 
 interface CustomPdfViewerProps {
-  uniqueIdentifier: string;
+  // uniqueIdentifier: string;
   fileName?: string;
   blobUrl: string;
   isLoading?: boolean;
@@ -26,13 +23,13 @@ interface CustomPdfViewerProps {
 
 export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   isLoading = true,
-  uniqueIdentifier,
+  // uniqueIdentifier,
   fileName,
   blobUrl,
   highlightInfo,
   jumpToPage,
 }) => {
-  const pdfManager = PdfManager.getInstance(uniqueIdentifier);
+  const [pdfManager] = useState(() => new PdfManager());
   const viewerRef = useRef<HTMLDivElement>(null);
   const [pdfFileName, setPdfFileName] = useState<string | undefined>(undefined);
 
@@ -53,26 +50,22 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
         URL.revokeObjectURL(blobUrl);
       }
     };
-  }, [blobUrl]);
+  }, [blobUrl, pdfManager]);
 
   useEffect(() => {
     if (!viewerRef.current || !blobUrl) return;
     pdfManager.setActiveHighlight(highlightInfo);
-  }, [highlightInfo]);
+  }, [highlightInfo, blobUrl, pdfManager]);
 
-  const toolbarProps: ToolbarProps = { showFileName: false, fileName: pdfFileName, pdfManager, uniqueIdentifier, jumpToPage };
+  const toolbarProps: ToolbarProps = { showFileName: false, fileName: pdfFileName, pdfManager, jumpToPage };
 
   return (
     <div className="pdf-viewer-container">
       <PdfToolbar {...toolbarProps} />
       {isLoading ? (
-        <LinearProgress
-          sx={{
-            '& .MuiLinearProgress-bar': {
-              backgroundColor: 'orange',
-            },
-          }}
-        />
+        <div className="pdf-viewer-loader">
+          <div className="pdf-viewer-loader-bar" />
+        </div>
       ) : (
         <div className="pdfViewer" ref={viewerRef} />
       )}
