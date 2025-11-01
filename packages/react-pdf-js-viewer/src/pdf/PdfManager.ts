@@ -1,6 +1,5 @@
 import debounce from 'lodash.debounce';
 import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
-// import { PDFFindBar } from './PdfFindBar';
 import type { PDFFindBar } from './PdfFindBar';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Dispatch, SetStateAction } from 'react';

@@ -2,37 +2,31 @@
 
 /* === Main Toolbar Container === */
 .pdf-viewer-toolbar-container {
-  /* This is now a simple positioning container for the main
-     toolbar AND the absolutely-positioned find bar. */
   position: sticky;
-
   top: 0;
   width: 100%;
-  height: 55px; /* Fixed height */
+  height: 55px;
   z-index: 2;
-
-  /* Use PDF.js variables for automatic dark/light mode */
   background-color: var(--toolbar-bg-color, #f9f9fa);
   border-bottom: 1px solid var(--toolbar-border-color, #b8b8b8);
   color: var(--main-color, #181819);
-
   box-sizing: border-box;
 }
 
-/* === Main Toolbar Wrapper (NEW) === */
-/* This new class holds the flex layout */
+/* === Main Toolbar Wrapper === */
 .pdf-viewer-toolbar-main {
   display: flex;
   align-items: center;
   padding: 0 10px;
   gap: 10px;
-  height: 100%; /* Fill the container */
+  height: 100%;
 }
 
 
 /* === File Info (Left) === */
 .pdf-viewer-toolbar-file-info {
-  flex: 1 1 auto; /* Allow it to grow and shrink */
+  flex: 1 1 auto;
+  min-width: 0; /* Allow shrinking */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -43,10 +37,20 @@
 
 /* === Page Controls (Middle) === */
 .pdf-viewer-toolbar-control {
-  flex: 0 0 auto; /* Don't grow, just take needed space */
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* === Right Side Controls (Wrapper) === */
+.pdf-viewer-toolbar-right {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Push children (zoom/find) to the right */
+  gap: 10px;
+  min-width: 0; /* Allow shrinking */
 }
 
 /* Common style for all toolbar text buttons */
@@ -135,139 +139,191 @@
   text-align: center;
 }
 
+/* === Find Toggle Button (Far Right) === */
+.pdf-viewer-toolbar-find-toggle {
+  /* No margin-left: auto; needed thanks to .pdf-viewer-toolbar-right wrapper */
+}
+
 /* Style for the "Find" button when the findbar is open */
 .pdf-viewer-toolbar-find-toggle.toggled {
   background-color: var(--toggled-btn-bg-color, #00000033);
   color: var(--toggled-btn-color, #000);
 }
 
+
 /*
-  All other find bar styles (e.g., .doorHanger, .toolbarField, .toolbarButton)
-  are now provided by the imported 'pdf-js-dist/web/pdf_viewer.css'
-  and do not need to be duplicated here.
+ ===================================================================
+ == ADDED: MISSING PDF.JS UI STYLES FOR FINDBAR
+ ===================================================================
+ These are the styles from the original pdf_viewer.css that
+ your PdfToolbar.tsx component needs to function correctly.
 */
 
-/* *** ADDED ***
-  Find bar position override.
-  This forces the find bar to appear *below* our 55px
-  main toolbar, overriding the default 'top' value
-  from pdf_viewer.css.
-*/
-#findbar {
-  top: 55px;
+.hidden {
+  display: none !important;
 }
 
-
-
-
-
-
-
-/* packages/react-pdf-js-viewer/src/css/PdfToolbar.css */
-
-/* === Main Toolbar Container === */
-.pdf-viewer-toolbar-container {
-  /* ... (this part is correct) ... */
-  position: sticky;
-  top: 0;
-  width: 100%;
-  height: 55px;
-  z-index: 2;
+.doorHanger {
+  position: absolute;
+  /* position: sticky; */
+  border: 1px solid var(--toolbar-border-color, #b8b8b8);
+  border-top: 0;
   background-color: var(--toolbar-bg-color, #f9f9fa);
-  border-bottom: 1px solid var(--toolbar-border-color, #b8b8b8);
   color: var(--main-color, #181819);
+  padding: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  border-radius: 0 0 4px 4px;
+
+  /* These are our custom overrides */
+  top: 55px;
+  right: 10px;
+  z-index: 10;
+}
+
+#findbar {
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#findbarInputContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbarField {
+  padding: 4px 8px;
+  border: 1px solid var(--field-border-color, #bbb);
+  background-color: var(--field-bg-color, white);
+  color: var(--field-color, #060606);
+  border-radius: 3px;
+  outline: none;
+  font-size: 13px;
+  transition: border-color 0.3s ease;
   box-sizing: border-box;
 }
 
-/* === Main Toolbar Wrapper (NEW) === */
-.pdf-viewer-toolbar-main {
+.toolbarField:focus {
+  border-color: #0a84ff;
+}
+
+#findbarInputContainer .toolbarField {
+  flex-grow: 1;
+}
+
+.splitToolbarButton {
   display: flex;
-  align-items: center;
-  padding: 0 10px;
-  gap: 10px;
-  height: 100%;
-}
-
-
-/* === File Info (Left) === */
-.pdf-viewer-toolbar-file-info {
-  /* *** MODIFIED: Allow this to grow to push the center *** */
-  flex: 1 1 auto;
-  min-width: 0; /* Allow shrinking */
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 14px;
-  font-weight: 600;
-  padding-right: 10px;
-}
-
-/* === Page Controls (Middle) === */
-.pdf-viewer-toolbar-control {
-  /* *** MODIFIED: Don't grow or shrink, allowing it to be centered *** */
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* === Right Side Controls (NEW WRAPPER) === */
-.pdf-viewer-toolbar-right {
-  /* *** ADDED: This wrapper will grow to push the center *** */
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end; /* Push children (zoom/find) to the right */
-  gap: 10px;
-  min-width: 0; /* Allow shrinking */
-}
-
-/* Common style for all toolbar text buttons */
-.pdf-viewer-toolbar-control button,
-.pdf-viewer-toolbar-zoom-control button,
-.pdf-viewer-toolbar-find-toggle {
-  /* ... (this rule is correct) ... */
-  background-color: transparent;
-  border: 1px solid var(--field-border-color, #bbb);
-  color: var(--main-color, #181819);
   border-radius: 3px;
+  border: 1px solid var(--field-border-color, #bbb);
+  background-color: var(--field-bg-color, white);
+}
+
+.toolbarButton {
+  background-color: transparent;
+  border: none;
+  color: var(--main-color, #181819);
   cursor: pointer;
   padding: 5px 10px;
-  margin: 0 5px;
   font-size: 13px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-/* ... (all :hover and :disabled rules are correct) ... */
+.toolbarButton:hover {
+  background-color: var(--button-hover-color, #ddd);
+}
 
-/* ... (all .pdf-viewer-toolbar-control input rules are correct) ... */
+.splitToolbarButton .toolbarButton:first-of-type {
+  border-radius: 2px 0 0 2px;
+}
 
-/* ... (all .pdf-viewer-toolbar-control span rules are correct) ... */
+.splitToolbarButton .toolbarButton:last-of-type {
+  border-radius: 0 2px 2px 0;
+}
 
-/* === Zoom Controls (Right) === */
-.pdf-viewer-toolbar-zoom-control {
-  flex: 0 0 auto; /* Don't grow */
+.splitToolbarButtonSeparator {
+  width: 1px;
+  background-color: var(--field-border-color, #bbb);
+  margin: 2px 0;
+}
+
+#findbarOptionsOneContainer,
+#findbarOptionsTwoContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.toolbarLabel {
+  font-size: 13px;
+  color: var(--main-color, #181819);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* Ensure checkboxes are aligned with labels */
+#findbarOptionsOneContainer input,
+#findbarOptionsTwoContainer input {
+  margin: 0;
+}
+
+#findbarMessageContainer {
+  font-size: 13px;
+  color: var(--main-color, #181819);
+  min-height: 1.5em; /* Prevent layout shift */
   display: flex;
   align-items: center;
 }
 
-/* ... (.pdf-viewer-toolbar-zoom-control span rule is correct) ... */
-
-/* === Find Toggle Button (Far Right) === */
-.pdf-viewer-toolbar-find-toggle {
-  /* *** MODIFIED: Remove margin-left, as the parent wrapper now handles alignment *** */
-  /* margin-left: auto; */
+.findResultsCount {
+  margin-right: 8px;
 }
 
-/* ... (.pdf-viewer-toolbar-find-toggle.toggled rule is correct) ... */
+.toolbarField[data-status="notFound"] {
+  border-color: red !important;
+  background-color: #ffe6e6 !important;
+}
+
+.findMsg[data-status="notFound"] {
+  color: red;
+}
+
+/* Support for loading spinner icon */
+.loadingInput {
+  position: relative;
+  display: flex;
+  flex-grow: 1;
+}
 
 /*
-  All other find bar styles (e.g., .doorHanger, .toolbarField, .toolbarButton)
-  are now provided by 'pdfjs-dist/web/pdf_viewer.css'
-  which is imported in CustomPdfViewer.tsx
+  The loading icon is defined in pdf_viewer.css, but we can
+  create a simple CSS-only one here as a fallback.
 */
-
-/* Find bar position override */
-#findbar {
-  top: 55px;
+.loadingInput[data-status="pending"]::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  margin-top: -8px; /* half of height */
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--field-border-color, #bbb);
+  border-top-color: var(--main-color, #181819);
+  animation: pdf-viewer-find-spinner 0.8s linear infinite;
+  display: block;
 }
+
+@keyframes pdf-viewer-find-spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

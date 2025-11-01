@@ -2,7 +2,6 @@ import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
 import { PDFViewer, EventBus, PDFLinkService, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
-import 'pdfjs-dist/web/pdf_viewer.css';
 import { PdfToolbar } from './PdfToolbar';
 import type { ToolbarProps } from './ToolbarInterface';
 import PdfManager from './PdfManager';

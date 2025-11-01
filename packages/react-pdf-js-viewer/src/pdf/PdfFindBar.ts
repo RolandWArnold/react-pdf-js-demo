@@ -174,6 +174,8 @@ class PDFFindBar {
     if (!this.opened) {
       return;
     }
+
+    this.clearFindStateAndHighlights();
     this.resizeObserver.disconnect();
 
     this.opened = false;
@@ -215,6 +217,33 @@ class PDFFindBar {
   private onFindInput = () => {
     this.dispatchEvent('');
   };
+
+  private clearFindStateAndHighlights() {
+    // 1) Clear the input and uncheck "Highlight All"
+    if (this.findField) this.findField.value = '';
+    if (this.highlightAll) this.highlightAll.checked = false;
+
+    // 2) Dispatch an empty "find" so PDFFindController clears matches
+    // (empty query + highlightAll=false clears all find overlays)
+    this.dispatchEvent('');
+
+    // 3) Reset the local UI bits (status, count, message)
+    if (this.findField) {
+      this.findField.setAttribute('data-status', '');
+      this.findField.setAttribute('aria-invalid', 'false');
+    }
+    if (this.findMsg) {
+      this.findMsg.setAttribute('data-status', '');
+      this.findMsg.removeAttribute('data-l10n-id');
+      this.findMsg.textContent = '';
+    }
+    if (this.findResultsCount) {
+      this.findResultsCount.removeAttribute('data-l10n-id');
+      this.findResultsCount.removeAttribute('data-l10n-args');
+      this.findResultsCount.textContent = '';
+    }
+  }
+
 
   private onFindKeydown = (e: KeyboardEvent) => {
     switch (e.key) {
