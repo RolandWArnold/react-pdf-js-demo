@@ -1,7 +1,7 @@
 # react-pdf-js-viewer
 
 [![npm version](https://img.shields.io/npm/v/react-pdf-js-viewer.svg)](https://www.npmjs.com/package/react-pdf-js-viewer)
-[![License: Apache](https://img.shields.io/badge/License-Apache-yellow.svg)](https://opensource.org/licenses/Apache)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A lightweight React wrapper around PDF.js that includes a fully featured toolbar and find bar.
 
@@ -28,7 +28,7 @@ npm install react-pdf-js-viewer pdfjs-dist
 This package lists `react`, `react-dom`, and `pdfjs-dist` as peer dependencies. You must install them yourself. This package is tested with `pdfjs-dist@4.2.67`.
 
 Usage
-You must import the component and its stylesheet.
+You must import the component.
 
 ```typescript
 // src/App.tsx
@@ -101,6 +101,10 @@ You can override the default colors and styles by setting these CSS custom prope
 }
 ```
 
-## License
+---
 
-Licensed under the Apache License, Version 2.0.
+## 📜 License
+
+This project is licensed under the Apache License, Version 2.0.
+
+---

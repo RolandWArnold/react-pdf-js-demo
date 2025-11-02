@@ -1,35 +1,142 @@
-# react-pdf-js-viewer (Monorepo)
+# react-pdf-js-viewer
 
-This repository is a monorepo containing the `react-pdf-js-viewer` package and its demo application.
-* **`packages/react-pdf-js-viewer`**: The published npm package.
-* **`apps/demo`**: A Vite + React demo app for local development.
+[![npm version](https://img.shields.io/npm/v/react-pdf-js-viewer.svg)](https://www.npmjs.com/package/react-pdf-js-viewer)
+[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-## Screenshot
+A lightweight React component that wraps Mozilla's `pdf.js` to provide a "drop-in" PDF viewer with a fully-featured toolbar and find bar.
 
 ![react-pdf-js-viewer demo](./assets/screenshot-1.png)
 
+## About This Project
 
-## 🚀 Local Development
+This repository is a monorepo containing two main parts:
 
-This project uses **pnpm** as a package manager.
+* **`packages/react-pdf-js-viewer`**: The published npm package. This is the component you install in your app.
+* **`apps/demo`**: A Vite + React demo app for local development and testing.
 
-1.  **Install dependencies:**
-    ```bash
-    pnpm install
-    ```
+### 📦 The Package: `react-pdf-js-viewer`
 
-2.  **Run the demo app:**
-    This will start the demo app on `http://localhost:5173`.
-    ```bash
-    pnpm demo
-    ```
+The goal of this package is to provide a simple, "batteries-included" React component for viewing PDF documents. It bundles `pdf.js` with a clean, modern UI for navigation, zoom, and text search, saving you from writing complex boilerplate.
 
-3.  **Build the library:**
-    To run a production build of the `react-pdf-js-viewer` package:
-    ```bash
-    pnpm build:lib
-    ```
+**Key Features:**
+* **Full Toolbar:** Page navigation, page number input, and zoom controls.
+* **Find Bar:** `Ctrl+F` support, "Highlight All," "Match Case," and other standard find controls.
+* **Simple API:** Just pass a `File` or `Blob` object to the component.
+* **Custom Styling:** Use CSS custom properties to override default styles.
+* **TypeScript:** Written in TypeScript with types included.
+
+---
+
+## 📖 Documentation & Usage
+
+For full installation instructions, component props, and styling guides, please see the package's dedicated README:
+
+## [➡️ Read the `react-pdf-js-viewer` README](./packages/react-pdf-js-viewer/README.md)
+
+---
+
+## 🚀 Local Development (Contributing)
+
+This section is for developers who want to run the demo app locally or contribute to the package. This project uses **pnpm** as a package manager.
+
+**1. Install dependencies:**
+```bash
+pnpm install
+```
+
+**2. Run the demo app:**
+
+This will start the demo app on `http://localhost:5173`.
+
+```bash
+pnpm demo
+```
+
+**3. Build the library:**
+
+To run a production build of the react-pdf-js-viewer package:
+
+```bash
+pnpm build:lib
+```
+
+**Usage**
+
+You must import the component.
+
+```typescript
+// src/App.tsx
+import { useEffect, useState } from "react";
+import { CustomPdfViewer } from "react-pdf-js-viewer";
+
+export default function App() {
+  // We just need to store the blob itself, or null
+  const [file, setFile] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      // Fetch and get the blob
+      const res = await fetch("/sample.pdf");
+      const blob = await res.blob();
+      setFile(blob);
+    })();
+  }, []);
+
+  if (!file) return <div style={{ padding: 24 }}>Loading…</div>;
+
+  return (
+    <div style={{ height: "100vh", width: "100vw" }}>
+      <CustomPdfViewer
+        fileName="sample.pdf"
+        file={file}
+      />
+    </div>
+  );
+}
+```
+
+## Component Props
+
+| Prop | Type | Description |
+| :--- | :--- | :--- |
+| **`blobUrl`** | `string` | **Required.** The blob URL (`URL.createObjectURL(...)`) of the PDF file. |
+| `fileName` | `string` | Optional. The name to display in the toolbar. |
+| `isLoading` | `boolean` | Optional. Set to `true` to display the loading bar. Set to `false` when the `blobUrl` is ready. |
+
+## Styling
+
+You can override the default colors and styles by setting these CSS custom properties in your own stylesheet:
+
+```css
+/* Example styling overrides */
+:root {
+  /* Toolbar */
+  --rpjv-toolbar-bg: #f9f9fa;
+  --rpjv-toolbar-border-color: #b8b8b8;
+  --rpjv-main-color: #181819;
+
+  /* Find Bar */
+  --rpjv-findbar-bg: #f9f9fa;
+  --rpjv-findbar-border-color: #b8b8b8;
+
+  /* Buttons */
+  --rpjv-button-hover-color: #ddd;
+  --rpjv-toggled-btn-bg: #00000033;
+  --rpjv-toggled-btn-color: #000;
+
+  /* Form Fields */
+  --rpjv-field-border-color: #bbb;
+  --rpjv-field-bg-color: white;
+  --rpjv-field-color: #060606;
+
+  /* Viewer */
+  --rpjv-container-bg: #f2f2f2;
+  --rpjv-viewer-bg: #f1f5f9;
+}
+```
 
 ## 📜 License
 
-This project is licensed under the Apache 2.0 License.
+This project is licensed under the Apache License, Version 2.0.
+
+---
