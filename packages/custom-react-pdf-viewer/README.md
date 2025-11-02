@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/custom-react-pdf-viewer.svg)](https://www.npmjs.com/package/custom-react-pdf-viewer)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A lightweight React wrapper around PDF.js that includes a fully featured toolbar and find bar.
+A production-ready React wrapper around PDF.js with toolbar and find bar, licensed under Apache 2.0.
 
 This package provides a `CustomPdfViewer` component that handles rendering, page navigation, zoom, and text search, with sane defaults and CSS custom properties for easy styling.
 
