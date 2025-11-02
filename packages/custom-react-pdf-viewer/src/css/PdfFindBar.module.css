@@ -2,10 +2,10 @@
 
 .doorHanger {
   position: absolute;
-  border: 1px solid var(--rpjv-findbar-border-color, #b8b8b8);
+  border: 1px solid var(--custom-pdf-findbar-border-color, #b8b8b8);
   border-top: 0;
-  background-color: var(--rpjv-findbar-bg, #f9f9fa);
-  color: var(--rpjv-main-color, #181819);
+  background-color: var(--custom-pdf-findbar-bg, #f9f9fa);
+  color: var(--custom-pdf-main-color, #181819);
   padding: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
   border-radius: 0 0 4px 4px;
@@ -29,9 +29,9 @@
 
 .toolbarField {
   padding: 4px 8px;
-  border: 1px solid var(--rpjv-field-border-color, #bbb);
-  background-color: var(--rpjv-field-bg-color, white);
-  color: var(--rpjv-field-color, #060606);
+  border: 1px solid var(--custom-pdf-field-border-color, #bbb);
+  background-color: var(--custom-pdf-field-bg-color, white);
+  color: var(--custom-pdf-field-color, #060606);
   border-radius: 3px;
   outline: none;
   font-size: 13px;
@@ -50,14 +50,14 @@
 .splitToolbarButton {
   display: flex;
   border-radius: 3px;
-  border: 1px solid var(--rpjv-field-border-color, #bbb);
-  background-color: var(--rpjv-field-bg-color, white);
+  border: 1px solid var(--custom-pdf-field-border-color, #bbb);
+  background-color: var(--custom-pdf-field-bg-color, white);
 }
 
 .toolbarButton {
   background-color: transparent;
   border: none;
-  color: var(--rpjv-main-color, #181819);
+  color: var(--custom-pdf-main-color, #181819);
   cursor: pointer;
   padding: 5px 10px;
   font-size: 13px;
@@ -65,7 +65,7 @@
 }
 
 .toolbarButton:hover {
-  background-color: var(--rpjv-button-hover-color, #ddd);
+  background-color: var(--custom-pdf-button-hover-color, #ddd);
 }
 
 .splitToolbarButton .toolbarButton:first-of-type {
@@ -78,7 +78,7 @@
 
 .splitToolbarButtonSeparator {
   width: 1px;
-  background-color: var(--rpjv-field-border-color, #bbb);
+  background-color: var(--custom-pdf-field-border-color, #bbb);
   margin: 2px 0;
 }
 
@@ -92,7 +92,7 @@
 
 .toolbarLabel {
   font-size: 13px;
-  color: var(--rpjv-main-color, #181819);
+  color: var(--custom-pdf-main-color, #181819);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -106,7 +106,7 @@
 
 .findbarMessageContainer {
   font-size: 13px;
-  color: var(--rpjv-main-color, #181819);
+  color: var(--custom-pdf-main-color, #181819);
   min-height: 1.5em; /* Prevent layout shift */
   display: flex;
   align-items: center;
@@ -140,8 +140,8 @@
   width: 16px;
   height: 16px;
   border-radius: 50%;
-  border: 2px solid var(--rpjv-field-border-color, #bbb);
-  border-top-color: var(--rpjv-main-color, #181819);
+  border: 2px solid var(--custom-pdf-field-border-color, #bbb);
+  border-top-color: var(--custom-pdf-main-color, #181819);
   animation: custom-react-pdf-viewer-find-spinner 0.8s linear infinite;
   display: block;
 }

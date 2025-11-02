@@ -7,9 +7,9 @@
   width: 100%;
   height: 55px;
   z-index: 2;
-  background-color: var(--rpjv-toolbar-bg, #f9f9fa);
-  border-bottom: 1px solid var(--rpjv-toolbar-border-color, #b8b8b8);
-  color: var(--rpjv-main-color, #181819);
+  background-color: var(--custom-pdf-toolbar-bg, #f9f9fa);
+  border-bottom: 1px solid var(--custom-pdf-toolbar-border-color, #b8b8b8);
+  color: var(--custom-pdf-main-color, #181819);
   box-sizing: border-box;
 }
 
@@ -57,8 +57,8 @@
 .toolbarZoomControl button,
 .toolbarFindToggle {
   background-color: transparent;
-  border: 1px solid var(--rpjv-field-border-color, #bbb);
-  color: var(--rpjv-main-color, #181819);
+  border: 1px solid var(--custom-pdf-field-border-color, #bbb);
+  color: var(--custom-pdf-main-color, #181819);
   border-radius: 3px;
   cursor: pointer;
   padding: 5px 10px;
@@ -70,14 +70,14 @@
 .toolbarControl button:hover,
 .toolbarZoomControl button:hover,
 .toolbarFindToggle:hover {
-  background-color: var(--rpjv-button-hover-color, #ddd);
+  background-color: var(--custom-pdf-button-hover-color, #ddd);
 }
 
 .toolbarControl button:disabled,
 .toolbarZoomControl button:disabled {
   background-color: transparent;
-  border-color: var(--rpjv-field-border-color, #bbb);
-  color: var(--rpjv-main-color, #181819);
+  border-color: var(--custom-pdf-field-border-color, #bbb);
+  color: var(--custom-pdf-main-color, #181819);
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -93,9 +93,9 @@
   text-align: center;
   margin: 0 5px;
   font-size: 13px;
-  border: 1px solid var(--rpjv-field-border-color, #bbb);
-  background-color: var(--rpjv-field-bg-color, white);
-  color: var(--rpjv-field-color, #060606);
+  border: 1px solid var(--custom-pdf-field-border-color, #bbb);
+  background-color: var(--custom-pdf-field-bg-color, white);
+  color: var(--custom-pdf-field-color, #060606);
   border-radius: 3px;
   padding: 4px 8px;
   outline: none;
@@ -128,7 +128,7 @@
 .toolbarZoomControl span {
   font-size: 15px;
   margin: 0 5px;
-  color: var(--rpjv-main-color, #181819);
+  color: var(--custom-pdf-main-color, #181819);
   width: 40px; /* Give it space */
   text-align: center;
 }
@@ -140,6 +140,6 @@
 
 /* Style for the "Find" button when the findbar is open */
 .toolbarFindToggle.toggled {
-  background-color: var(--rpjv-toggled-btn-bg, #00000033);
-  color: var(--rpjv-toggled-btn-color, #000);
+  background-color: var(--custom-pdf-toggled-btn-bg, #00000033);
+  color: var(--custom-pdf-toggled-btn-color, #000);
 }

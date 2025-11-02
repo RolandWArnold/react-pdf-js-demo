@@ -1,7 +1,7 @@
 /* packages/custom-react-pdf-viewer/src/css/CustomPdfViewer.module.css */
 .container {
   position: relative;
-  background: var(--rpjv-container-bg, #f2f2f2);
+  background: var(--custom-pdf-container-bg, #f2f2f2);
   overflow: none;
   width: 100%;
   height: fit-content;
@@ -13,7 +13,7 @@
   top: 55px; /* This must match toolbar height */
   height: calc(var(--copilot-chat-pane-full-height, 100vh) - 55px);
   overflow: auto;
-  background: var(--rpjv-viewer-bg, #f1f5f9);
+  background: var(--custom-pdf-viewer-bg, #f1f5f9);
 }
 
 .loader {

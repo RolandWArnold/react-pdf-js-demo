@@ -80,27 +80,27 @@ You can override the default colors and styles by setting these CSS custom prope
 /* Example styling overrides */
 :root {
   /* Toolbar */
-  --rpjv-toolbar-bg: #f9f9fa;
-  --rpjv-toolbar-border-color: #b8b8b8;
-  --rpjv-main-color: #181819;
+  --custom-pdf-toolbar-bg: #f9f9fa;
+  --custom-pdf-toolbar-border-color: #b8b8b8;
+  --custom-pdf-main-color: #181819;
 
   /* Find Bar */
-  --rpjv-findbar-bg: #f9f9fa;
-  --rpjv-findbar-border-color: #b8b8b8;
+  --custom-pdf-findbar-bg: #f9f9fa;
+  --custom-pdf-findbar-border-color: #b8b8b8;
 
   /* Buttons */
-  --rpjv-button-hover-color: #ddd;
-  --rpjv-toggled-btn-bg: #00000033;
-  --rpjv-toggled-btn-color: #000;
+  --custom-pdf-button-hover-color: #ddd;
+  --custom-pdf-toggled-btn-bg: #00000033;
+  --custom-pdf-toggled-btn-color: #000;
 
   /* Form Fields */
-  --rpjv-field-border-color: #bbb;
-  --rpjv-field-bg-color: white;
-  --rpjv-field-color: #060606;
+  --custom-pdf-field-border-color: #bbb;
+  --custom-pdf-field-bg-color: white;
+  --custom-pdf-field-color: #060606;
 
   /* Viewer */
-  --rpjv-container-bg: #f2f2f2;
-  --rpjv-viewer-bg: #f1f5f9;
+  --custom-pdf-container-bg: #f2f2f2;
+  --custom-pdf-viewer-bg: #f1f5f9;
 }
 ```
 

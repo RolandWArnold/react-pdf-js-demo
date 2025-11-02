@@ -1,6 +1,6 @@
 {
   "name": "custom-react-pdf-viewer",
-  "version": "1.0.4",
+  "version": "2.0.0",
   "description": "A lightweight React wrapper around PDF.js with toolbar and find bar.",
   "license": "Apache-2.0",
   "main": "./dist/index.mjs",
