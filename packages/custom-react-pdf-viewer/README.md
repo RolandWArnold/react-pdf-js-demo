@@ -17,7 +17,7 @@ This package provides a `CustomPdfViewer` component that handles rendering, page
 
 ## Screenshot
 
-![custom-react-pdf-viewer demo](../../assets/screenshot-1.png)
+![custom-react-pdf-viewer demo](https://raw.githubusercontent.com/RolandWArnold/custom-react-pdf-viewer/refs/heads/main/assets/screenshot-1.png)
 
 ## Installation
 
@@ -65,7 +65,7 @@ export default function App() {
 
 | Prop | Type | Description |
 | :--- | :--- | :--- |
-| **`blobUrl`** | `string` | **Required.** The blob URL (`URL.createObjectURL(...)`) of the PDF file. |
+| **`file`** | `Blob | null` | **Required.** The `File` or `Blob` object of the PDF. The component will handle creating and revoking the blob URL. |
 | `fileName` | `string` | Optional. The name to display in the toolbar. |
 | `isLoading` | `boolean` | Optional. Set to `true` to display the loading bar. Set to `false` when the `blobUrl` is ready. |
 
