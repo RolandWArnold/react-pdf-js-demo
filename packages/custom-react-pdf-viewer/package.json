@@ -1,5 +1,5 @@
 {
-  "name": "react-pdf-js-viewer",
+  "name": "custom-react-pdf-viewer",
   "version": "1.0.0",
   "description": "A lightweight React wrapper around PDF.js with toolbar and find bar.",
   "license": "Apache-2.0",
@@ -42,7 +42,7 @@
   "author": "Roland Arnold",
   "repository": {
     "type": "git",
-    "url": "https://github.com/roland-arnold/react-pdf-js-viewer.git"
+    "url": "https://github.com/roland-arnold/custom-react-pdf-viewer.git"
   },
   "peerDependencies": {
     "react": ">=18",

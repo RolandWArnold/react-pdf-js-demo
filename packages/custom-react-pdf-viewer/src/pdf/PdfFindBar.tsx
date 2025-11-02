@@ -1,4 +1,4 @@
-// packages/react-pdf-js-viewer/src/pdf/PdfFindBar.tsx
+// packages/custom-react-pdf-viewer/src/pdf/PdfFindBar.tsx
 import React, { useState, useEffect, useRef, useId } from 'react';
 import type { FunctionComponent } from 'react';
 import styles from '../css/PdfFindBar.module.css';

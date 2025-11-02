@@ -1,4 +1,4 @@
-// packages/react-pdf-js-viewer/src/pdf/PdfManager.ts
+// packages/custom-react-pdf-viewer/src/pdf/PdfManager.ts
 import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Dispatch, SetStateAction } from 'react';

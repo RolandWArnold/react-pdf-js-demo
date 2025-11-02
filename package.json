@@ -1,10 +1,10 @@
 {
-  "name": "react-pdf-js-viewer-monorepo",
+  "name": "custom-react-pdf-viewer-monorepo",
   "private": true,
   "scripts": {
     "demo": "pnpm --filter demo dev",
-    "build:lib": "pnpm --filter react-pdf-js-viewer build",
-    "publish:npm": "pnpm build:lib && pnpm --filter react-pdf-js-viewer publish --no-git-checks"
+    "build:lib": "pnpm --filter custom-react-pdf-viewer build",
+    "publish:npm": "pnpm build:lib && pnpm --filter custom-react-pdf-viewer publish --no-git-checks"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

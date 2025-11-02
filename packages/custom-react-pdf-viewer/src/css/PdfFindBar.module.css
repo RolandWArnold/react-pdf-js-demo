@@ -1,4 +1,4 @@
-/* packages/react-pdf-js-viewer/src/css/PdfFindBar.module.css */
+/* packages/custom-react-pdf-viewer/src/css/PdfFindBar.module.css */
 
 .doorHanger {
   position: absolute;
@@ -142,11 +142,11 @@
   border-radius: 50%;
   border: 2px solid var(--rpjv-field-border-color, #bbb);
   border-top-color: var(--rpjv-main-color, #181819);
-  animation: react-pdf-js-viewer-find-spinner 0.8s linear infinite;
+  animation: custom-react-pdf-viewer-find-spinner 0.8s linear infinite;
   display: block;
 }
 
-@keyframes react-pdf-js-viewer-find-spinner {
+@keyframes custom-react-pdf-viewer-find-spinner {
   0% {
     transform: rotate(0deg);
   }

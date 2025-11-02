@@ -1,6 +1,6 @@
-# react-pdf-js-viewer
+# custom-react-pdf-viewer
 
-[![npm version](https://img.shields.io/npm/v/react-pdf-js-viewer.svg)](https://www.npmjs.com/package/react-pdf-js-viewer)
+[![npm version](https://img.shields.io/npm/v/custom-react-pdf-viewer.svg)](https://www.npmjs.com/package/custom-react-pdf-viewer)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A lightweight React wrapper around PDF.js that includes a fully featured toolbar and find bar.
@@ -17,12 +17,12 @@ This package provides a `CustomPdfViewer` component that handles rendering, page
 
 ## Screenshot
 
-![react-pdf-js-viewer demo](../../assets/screenshot-1.png)
+![custom-react-pdf-viewer demo](../../assets/screenshot-1.png)
 
 ## Installation
 
 ```bash
-npm install react-pdf-js-viewer pdfjs-dist
+npm install custom-react-pdf-viewer pdfjs-dist
 ```
 
 This package lists `react`, `react-dom`, and `pdfjs-dist` as peer dependencies. You must install them yourself. This package is tested with `pdfjs-dist@4.2.67`.
@@ -33,7 +33,7 @@ You must import the component.
 ```typescript
 // src/App.tsx
 import { useEffect, useState } from "react";
-import { CustomPdfViewer } from "react-pdf-js-viewer";
+import { CustomPdfViewer } from "custom-react-pdf-viewer";
 
 export default function App() {
   // We just need to store the blob itself, or null

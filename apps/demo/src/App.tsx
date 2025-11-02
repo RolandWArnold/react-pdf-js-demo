@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CustomPdfViewer } from "react-pdf-js-viewer";
+import { CustomPdfViewer } from "custom-react-pdf-viewer";
 
 export default function App() {
   // We just need to store the blob itself, or null
@@ -20,10 +20,7 @@ export default function App() {
     <div style={{ height: "100vh", width: "100vw" }}>
       <CustomPdfViewer
         fileName="sample.pdf"
-        file={file} // Pass the file/blob
-        // optional:
-        // jumpToPage={3}
-        // highlightInfo={{ 0: "some text to highlight on page 1" }}
+        file={file}
       />
     </div>
   );

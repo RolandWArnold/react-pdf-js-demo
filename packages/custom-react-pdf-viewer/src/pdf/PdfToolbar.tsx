@@ -1,4 +1,4 @@
-// packages/react-pdf-js-viewer/src/pdf/PdfToolbar.tsx
+// packages/custom-react-pdf-viewer/src/pdf/PdfToolbar.tsx
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import type { FunctionComponent } from 'react';
 import type { ToolbarProps } from './ToolbarInterface';

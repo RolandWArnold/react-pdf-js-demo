@@ -27,15 +27,15 @@ importers:
 
   apps/demo:
     dependencies:
+      custom-react-pdf-viewer:
+        specifier: workspace:*
+        version: link:../../packages/custom-react-pdf-viewer
       react:
         specifier: ^18.2.0
         version: 18.3.1
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
-      react-pdf-js-viewer:
-        specifier: workspace:*
-        version: link:../../packages/react-pdf-js-viewer
     devDependencies:
       '@eslint/js':
         specifier: latest
@@ -68,7 +68,7 @@ importers:
         specifier: ^5.2.0
         version: 5.4.20
 
-  packages/react-pdf-js-viewer:
+  packages/custom-react-pdf-viewer:
     dependencies:
       pdfjs-dist:
         specifier: 4.2.67

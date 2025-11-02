@@ -1,4 +1,4 @@
-// packages/react-pdf-js-viewer/src/pdf/CustomPdfViewer.tsx
+// packages/custom-react-pdf-viewer/src/pdf/CustomPdfViewer.tsx
 import type { FC } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';

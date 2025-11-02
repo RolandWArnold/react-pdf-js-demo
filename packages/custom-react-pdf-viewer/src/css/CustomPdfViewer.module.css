@@ -1,4 +1,4 @@
-/* packages/react-pdf-js-viewer/src/css/CustomPdfViewer.module.css */
+/* packages/custom-react-pdf-viewer/src/css/CustomPdfViewer.module.css */
 .container {
   position: relative;
   background: var(--rpjv-container-bg, #f2f2f2);
@@ -31,11 +31,11 @@
   position: absolute;
   left: 0;
   top: 0;
-  animation: react-pdf-js-viewer-indeterminate-progress 2s infinite ease-out;
+  animation: custom-react-pdf-viewer-indeterminate-progress 2s infinite ease-out;
   transform-origin: 0% 50%;
 }
 
-@keyframes react-pdf-js-viewer-indeterminate-progress {
+@keyframes custom-react-pdf-viewer-indeterminate-progress {
   0% { transform: translateX(-100%) scaleX(0.5); }
   50% { transform: translateX(0) scaleX(0.8); }
   100% { transform: translateX(100%) scaleX(0.5); }

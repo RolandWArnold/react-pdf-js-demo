@@ -1,20 +1,20 @@
-# react-pdf-js-viewer
+# custom-react-pdf-viewer
 
-[![npm version](https://img.shields.io/npm/v/react-pdf-js-viewer.svg)](https://www.npmjs.com/package/react-pdf-js-viewer)
+[![npm version](https://img.shields.io/npm/v/custom-react-pdf-viewer.svg)](https://www.npmjs.com/package/custom-react-pdf-viewer)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A lightweight React component that wraps Mozilla's `pdf.js` to provide a "drop-in" PDF viewer with a fully-featured toolbar and find bar.
 
-![react-pdf-js-viewer demo](./assets/screenshot-1.png)
+![custom-react-pdf-viewer demo](./assets/screenshot-1.png)
 
 ## About This Project
 
 This repository is a monorepo containing two main parts:
 
-* **`packages/react-pdf-js-viewer`**: The published npm package. This is the component you install in your app.
+* **`packages/custom-react-pdf-viewer`**: The published npm package. This is the component you install in your app.
 * **`apps/demo`**: A Vite + React demo app for local development and testing.
 
-### 📦 The Package: `react-pdf-js-viewer`
+### 📦 The Package: `custom-react-pdf-viewer`
 
 The goal of this package is to provide a simple, "batteries-included" React component for viewing PDF documents. It bundles `pdf.js` with a clean, modern UI for navigation, zoom, and text search, saving you from writing complex boilerplate.
 
@@ -31,7 +31,7 @@ The goal of this package is to provide a simple, "batteries-included" React comp
 
 For full installation instructions, component props, and styling guides, please see the package's dedicated README:
 
-## [➡️ Read the `react-pdf-js-viewer` README](./packages/react-pdf-js-viewer/README.md)
+## [➡️ Read the `custom-react-pdf-viewer` README](./packages/custom-react-pdf-viewer/README.md)
 
 ---
 
@@ -54,7 +54,7 @@ pnpm demo
 
 **3. Build the library:**
 
-To run a production build of the react-pdf-js-viewer package:
+To run a production build of the custom-react-pdf-viewer package:
 
 ```bash
 pnpm build:lib
@@ -67,7 +67,7 @@ You must import the component.
 ```typescript
 // src/App.tsx
 import { useEffect, useState } from "react";
-import { CustomPdfViewer } from "react-pdf-js-viewer";
+import { CustomPdfViewer } from "custom-react-pdf-viewer";
 
 export default function App() {
   // We just need to store the blob itself, or null

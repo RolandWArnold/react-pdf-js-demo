@@ -3,9 +3,9 @@
   "compilerOptions": {
     "types": ["vite/client"],
     "paths": {
-      "react-pdf-js-viewer": ["../../packages/react-pdf-js-viewer/src/index.ts"],
+      "custom-react-pdf-viewer": ["../../packages/custom-react-pdf-viewer/src/index.ts"],
     }
   },
   "include": ["src"],
-  "references": [{ "path": "../../packages/react-pdf-js-viewer" }]
+  "references": [{ "path": "../../packages/custom-react-pdf-viewer" }]
 }
