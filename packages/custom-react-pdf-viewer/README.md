@@ -23,7 +23,7 @@ This package provides a `CustomPdfViewer` component that handles rendering, page
 
 ```bash
 # Browser apps
-npm install custom-react-pdf-viewer pdfjs-dist@4.2.67 --no-optional
+npm install custom-react-pdf-viewer pdfjs-dist@4.2.67 --omit=optional
 # or
 pnpm add custom-react-pdf-viewer pdfjs-dist@4.2.67 --no-optional
 # or
