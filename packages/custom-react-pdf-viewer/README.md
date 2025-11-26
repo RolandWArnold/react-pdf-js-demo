@@ -90,6 +90,7 @@ You can override the default colors and styles by setting these CSS custom prope
   /* Find Bar */
   --custom-pdf-findbar-bg: #f9f9fa;
   --custom-pdf-findbar-border-color: #b8b8b8;
+  --custom-pdf-loader-bar-color: lightblue;
 
   /* Buttons */
   --custom-pdf-button-hover-color: #ddd;
