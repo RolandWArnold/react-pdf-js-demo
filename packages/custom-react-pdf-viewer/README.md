@@ -17,7 +17,7 @@ This package provides a `CustomPdfViewer` component that handles rendering, page
 
 ## Screenshot
 
-![custom-react-pdf-viewer demo](https://raw.githubusercontent.com/RolandWArnold/custom-react-pdf-viewer/refs/heads/main/assets/screenshot-1.png)
+![custom-react-pdf-viewer demo](https://raw.githubusercontent.com/RolandWArnold/custom-react-pdf-viewer/refs/heads/main/assets/screenshot-2.png)
 
 ## Installation
 
@@ -55,8 +55,6 @@ export default function App() {
       setFile(blob);
     })();
   }, []);
-
-  if (!file) return <div style={{ padding: 24 }}>Loading…</div>;
 
   return (
     <div style={{ height: "100vh", width: "100vw" }}>

@@ -5,7 +5,7 @@
 
 A lightweight React component that wraps Mozilla's `pdf.js` to provide a "drop-in" PDF viewer with a fully-featured toolbar and find bar.
 
-![custom-react-pdf-viewer demo](./assets/screenshot-1.png)
+![custom-react-pdf-viewer demo](./assets/screenshot-2.png)
 
 ## About This Project
 
