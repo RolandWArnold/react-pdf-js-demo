@@ -4,6 +4,7 @@
   position: relative;
   background: var(--custom-pdf-container-bg, #f2f2f2);
   width: 100%;
+  height: 100%;
   height: fit-content;
 }
 
@@ -17,38 +18,36 @@
   bottom: 0;
 }
 
-/* === Centered Loading Overlay === */
 .loadingOverlay {
-  position: absolute;
-  top: 55px; /* Start below toolbar */
+  position: relative;
+  height: calc(var(--copilot-chat-pane-full-height, 100vh));
   left: 0;
   width: 100%;
-  height: calc(100% - 55px);
-  background-color: var(--custom-pdf-viewer-bg, #f1f5f9);
+  background: var(--custom-pdf-viewer-bg, #f1f5f9);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   z-index: 20;
-  color: var(--custom-pdf-main-color, #181819);
   font-family: sans-serif;
 }
 
 .spinner {
-  width: 30px;
-  height: 30px;
-  border: 3px solid rgba(0, 0, 0, 0.1);
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  border-top-color: var(--custom-pdf-main-color, #555);
-  animation: custom-react-pdf-viewer-spin 1s ease-in-out infinite;
+  position: relative;
   margin-bottom: 15px;
+  background: conic-gradient(from 0deg, transparent 0%, var(--custom-pdf-accent-color, #ccc) 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), black calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), black calc(100% - 3px));
+  animation: custom-react-pdf-viewer-spin 1s linear infinite;
 }
 
 @keyframes custom-react-pdf-viewer-spin {
   to { transform: rotate(360deg); }
 }
 
-/* === Indeterminate Progress Bar (Optional, can be used for page rendering) === */
 .loader {
   width: 100%;
   height: 4px;
@@ -61,7 +60,7 @@
 .loaderBar {
   width: 100%;
   height: 100%;
-  background-color: var(--custom-pdf-loader-bar-color, lightblue);
+  background-color: var(--custom-pdf-loader-bar-color, white);
   position: absolute;
   left: 0;
   top: 0;

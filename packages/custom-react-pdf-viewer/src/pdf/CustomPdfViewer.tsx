@@ -5,16 +5,26 @@ import { PDFViewer, EventBus, PDFLinkService, PDFFindController } from 'pdfjs-di
 import { PdfToolbar } from './PdfToolbar';
 import { PdfFindBar } from './PdfFindBar';
 import type { ToolbarProps } from './ToolbarInterface';
-import PdfManager from './PdfManager';
+import PdfManager, { ViewerConfig } from './PdfManager';
 import styles from '../css/CustomPdfViewer.module.css';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
+
+// === Simplified Adapter Interface ===
+// The ID is now curried into the implementation by the parent.
+export interface StateAdapter {
+  get<T>(key: string): T | undefined;
+  set<T>(key: string, value: T): void;
+}
 
 export interface CustomPdfViewerProps {
   fileName?: string;
   file: Blob | null;
   highlightInfo?: { [key: number]: string } | null;
   jumpToPage?: number | null;
+
+  // === Persistence ===
+  stateAdapter?: StateAdapter;
 }
 
 export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
@@ -22,67 +32,92 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   file,
   highlightInfo,
   jumpToPage,
+  stateAdapter,
 }) => {
   const [pdfManager] = useState(() => new PdfManager());
   const viewerRef = useRef<HTMLDivElement>(null);
-
-  // Track eventBus in state to ensure child components render when it's ready
   const [eventBus, setEventBus] = useState<any>(null);
-
   const [internalIsLoading, setInternalIsLoading] = useState(true);
   const [internalBlobUrl, setInternalBlobUrl] = useState<string | null>(null);
 
-  // 1. Manage Blob URL
   useEffect(() => {
     if (!file) {
       setInternalIsLoading(true);
       return;
     }
-
-    // Create the Blob URL
     const blobUrl = URL.createObjectURL(file);
     setInternalBlobUrl(blobUrl);
-
-    // NOTE: We do NOT set internalIsLoading(false) here anymore.
-    // We wait for the PDF to actually load content.
-
     return () => {
       URL.revokeObjectURL(blobUrl);
       setInternalBlobUrl(null);
     };
   }, [file]);
 
-  // 2. Init Viewer
   useEffect(() => {
-    // The viewerRef will now always exist because we changed the JSX return below.
     if (!viewerRef.current || !internalBlobUrl) {
       return;
     }
 
-    let initialPageNo = 1;
+    // === Hydration ===
+    // Config is clean. We just ask the adapter.
+    const config: ViewerConfig = {};
+
+    // DISABLED FOR NOW
+    if (stateAdapter && false) {
+        // config.pageNumber = stateAdapter.get<number>('page');
+        // config.scale = stateAdapter.get<string | number>('scale');
+        // config.rotation = stateAdapter.get<number>('rotation');
+    }
+
+    // Query params override stored state
     const queryParams = new URLSearchParams(window.location.search);
     const qPage = Number(queryParams.get('page'));
     if (qPage && !isNaN(qPage)) {
-      initialPageNo = qPage;
+        config.pageNumber = qPage;
     }
 
-    // Initialize the manager
-    pdfManager.initViewer(viewerRef.current, EventBus, PDFLinkService, PDFFindController, PDFViewer, internalBlobUrl, initialPageNo);
+    pdfManager.initViewer(
+        viewerRef.current,
+        EventBus,
+        PDFLinkService,
+        PDFFindController,
+        PDFViewer,
+        internalBlobUrl,
+        config
+    );
 
-    // Sync the eventBus to state and setup loading listeners
     if (pdfManager.eventBus) {
         setEventBus(pdfManager.eventBus);
 
-        // Listen for the 'pagesloaded' event to turn off the loading bar
-        const onPagesLoaded = () => {
-          setInternalIsLoading(false);
-        };
-
+        const onPagesLoaded = () => setInternalIsLoading(false);
         pdfManager.eventBus.on('pagesloaded', onPagesLoaded);
 
-        // Cleanup listener on unmount/re-run
+        // === Persistence Listeners ===
+        const handlePageChange = (evt: any) => {
+            stateAdapter?.set('page', evt.pageNumber);
+        };
+
+        const handleScaleChange = (evt: any) => {
+             const val = evt.presetValue || evt.scale;
+             stateAdapter?.set('scale', val);
+        };
+
+        const handleRotationChange = (evt: any) => {
+             stateAdapter?.set('rotation', evt.pagesRotation);
+        };
+
+        // DISABLED FOR NOW
+        if (stateAdapter && false) {
+            // pdfManager.eventBus.on('pagechanging', handlePageChange);
+            // pdfManager.eventBus.on('scalechanging', handleScaleChange);
+            // pdfManager.eventBus.on('rotationchanging', handleRotationChange);
+        }
+
         return () => {
            pdfManager.eventBus?.off('pagesloaded', onPagesLoaded);
+           pdfManager.eventBus?.off('pagechanging', handlePageChange);
+           pdfManager.eventBus?.off('scalechanging', handleScaleChange);
+           pdfManager.eventBus?.off('rotationchanging', handleRotationChange);
            pdfManager.unmount();
            setEventBus(null);
         };
@@ -92,9 +127,8 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
       pdfManager?.unmount();
       setEventBus(null);
     };
-  }, [internalBlobUrl, pdfManager]);
+  }, [internalBlobUrl, pdfManager, stateAdapter]);
 
-  // 3. Highlight info
   useEffect(() => {
     if (internalIsLoading || !viewerRef.current || !internalBlobUrl) {
       return;
@@ -107,19 +141,17 @@ export const CustomPdfViewer: FC<CustomPdfViewerProps> = ({
   return (
     <div className={styles.container}>
       <PdfToolbar {...toolbarProps} />
-
       {eventBus && <PdfFindBar eventBus={eventBus} />}
-
-      {/* Render Loader Overlay */}
       {internalIsLoading && (
-        <div className={styles.loader}>
-          <div className={styles.loaderBar} />
-        </div>
+        <>
+          <div className={styles.loader}>
+            <div className={styles.loaderBar} />
+          </div>
+          <div className={styles.loadingOverlay}>
+            <div className={styles.spinner} />
+          </div>
+        </>
       )}
-
-      {/* Always render the viewer div so the 'viewerRef' is populated
-        and accessible to the initViewer effect immediately.
-      */}
       <div className={`${styles.viewer} pdfViewer`} ref={viewerRef} />
     </div>
   );

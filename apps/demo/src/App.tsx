@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import { CustomPdfViewer } from "custom-react-pdf-viewer";
+import { useEffect, useState, useMemo } from "react";
+import { CustomPdfViewer, createLocalStorageAdapter } from "custom-react-pdf-viewer";
 import "./App.css";
 
-// Updated Document List
 const DOCUMENTS = [
   { id: 1, title: "Attention Is All You Need", fileName: "1-NIPS-2017-attention-is-all-you-need.pdf" },
   { id: 2, title: "To Build a Fire (Jack London)", fileName: "2-To-Build-a-Fire-by-Jack-London.pdf" },
@@ -11,7 +10,6 @@ const DOCUMENTS = [
   { id: 5, title: "Lorem Ipsum Test", fileName: "5-Lorem-ipsum.pdf" },
 ];
 
-// We must use the 'raw' domain to fetch the actual file content, not the GitHub UI
 const GITHUB_BASE_URL = "https://raw.githubusercontent.com/RolandWArnold/custom-react-pdf-viewer/main/apps/demo/public";
 
 export default function App() {
@@ -21,23 +19,26 @@ export default function App() {
 
   const activeDoc = DOCUMENTS.find((d) => d.id === selectedDocId) || DOCUMENTS[0];
 
+  // === The "Currying" Pattern ===
+  // This is disabled for now until the persistence logic is fully implemented and tested.
+  // We use the helper to create an adapter specific to this document.
+  // When activeDoc changes, we get a NEW adapter that writes to a NEW key.
+  // const stateAdapter = useMemo(() => {
+  //   // We can just use the filename, or combine it with a view ID if needed.
+  //   return createLocalStorageAdapter(activeDoc.fileName);
+  // }, [activeDoc.fileName]);
+
   useEffect(() => {
     let isMounted = true;
-
     const fetchDocument = async () => {
       setError(null);
       setFileBlob(null);
-
       try {
-        // Fetch the file from the remote GitHub raw URL
         const res = await fetch(`${GITHUB_BASE_URL}/${activeDoc.fileName}`);
-
         if (!res.ok) {
           throw new Error(`Could not load ${activeDoc.fileName} - Status: ${res.status}`);
         }
-
         const blob = await res.blob();
-
         if (isMounted) {
           setFileBlob(blob);
         }
@@ -48,17 +49,12 @@ export default function App() {
         }
       }
     };
-
     fetchDocument();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [activeDoc]);
 
   return (
     <div className="app-shell">
-      {/* Sidebar Area (20%) */}
       <aside className="sidebar">
         <div className="sidebar-header">
           <h2>Documents</h2>
@@ -78,7 +74,6 @@ export default function App() {
         </nav>
       </aside>
 
-      {/* Main Content / Viewer Area (80%) */}
       <main className="main-content">
         {error && (
           <div className="status-message error">

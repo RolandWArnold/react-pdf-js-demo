@@ -1,7 +1,7 @@
-// packages/custom-react-pdf-viewer/src/pdf/PdfManager.ts
 import { PDFViewer, EventBus, PDFLinkService, PDFPageView, PDFFindController } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import * as pdfjsLib from 'pdfjs-dist';
 import type { Dispatch, SetStateAction } from 'react';
+
 type EventBus = typeof EventBus;
 type PDFLinkService = typeof PDFLinkService;
 type PDFViewer = typeof PDFViewer;
@@ -9,6 +9,14 @@ type PDFPageView = typeof PDFPageView;
 type PDFFindController = typeof PDFFindController;
 
 const RESIZE_DEBOUNCE_TIME_MS = 50;
+
+// === Viewer Configuration ===
+// This object defines the "State" of the viewer at any given moment.
+export interface ViewerConfig {
+  pageNumber?: number;
+  scale?: number | string;
+  rotation?: number;
+}
 
 interface PdfData {
   eventBus?: EventBus;
@@ -18,7 +26,10 @@ interface PdfData {
   loadingTask?: pdfjsLib.PDFDocumentLoadingTask;
   viewerElement?: Element;
   blobUrl?: string;
-  initialPageNo?: number;
+
+  // The configuration applied on init
+  config?: ViewerConfig;
+
   cancelInit?: ReturnType<typeof setTimeout>;
   numPages?: number;
   activeHighlight?: { [key: number]: string } | null;
@@ -53,14 +64,12 @@ class PdfManager {
     findControllerConstructor: typeof PDFFindController = PDFFindController,
     ViewerConstructor: typeof PDFViewer = PDFViewer,
     blobUrl: string,
-    initialPageNo: number
+    config: ViewerConfig = {}
   ) => {
-    console.log('#######initViewer called');
     const eventBus = this.data?.eventBus || new EventConstructor();
     const linkService = this.data?.linkService || new LinkServiceConstructor({ eventBus });
     const findController = this.data?.findController || new findControllerConstructor({ eventBus, linkService: linkService, updateMatchesCountOnProgress: true });
 
-    // The PDFViewer *must* be new if the container is new, or if it doesn't exist, but it should re-use the other services.
     const pdfViewer = this.data?.pdfViewer && this.data.viewerElement === viewerElement
       ? this.data.pdfViewer
       : new ViewerConstructor({ eventBus, container: viewerElement, linkService, findController, viewer: viewerElement });
@@ -75,26 +84,19 @@ class PdfManager {
       findController,
       viewerElement,
       blobUrl,
-      initialPageNo,
+      config,
       cancelInit: setTimeout(this.loadPdf, 1),
     };
   };
 
   setActiveHighlight = (highlightInfo: { [key: number]: string } | null | undefined) => {
-    console.log(highlightInfo);
     if (this.data) {
       this.data.activeHighlight = highlightInfo;
-      if (highlightInfo) {
-        if (this.pdfViewer && Object.keys(highlightInfo).length !== 0) {
+      if (highlightInfo && this.pdfViewer && Object.keys(highlightInfo).length !== 0) {
           const pageNumber = Math.min(...Object.keys(highlightInfo).map(Number)) + 1;
-          console.log(`pageNumber: ${pageNumber}`);
           this.pdfViewer.currentPageNumber = pageNumber;
           this.data.scrollingInProgress = true;
-          this.pdfViewer?.refresh();
-        } else {
-          console.log('Clause not aligned');
-          this.pdfViewer?.refresh();
-        }
+          this.pdfViewer.refresh();
       } else {
         this.pdfViewer?.refresh();
       }
@@ -102,7 +104,6 @@ class PdfManager {
   };
 
   loadPdf = async () => {
-    console.log('#######loadPdf called');
     const loadingTask = pdfjsLib.getDocument(this.blobUrl!);
     this.data!.loadingTask = loadingTask;
     const pdfDoc = await loadingTask.promise;
@@ -125,7 +126,6 @@ class PdfManager {
   };
 
   unmount = () => {
-    console.log('#######unmount called');
     this.cancelInit && clearTimeout(this.cancelInit);
     this.eventBus?.off('textlayerrendered', this.onTextLayerRendered);
     window.removeEventListener('resize', this.handleResize);
@@ -159,7 +159,6 @@ class PdfManager {
     setCanZoomOut: Dispatch<SetStateAction<boolean>> | undefined;
     setCanZoomIn: Dispatch<SetStateAction<boolean>> | undefined;
   }) => {
-    console.log('registerHandlers callled.....');
     if (!this.data) {
       this.data = {};
     }
@@ -175,54 +174,22 @@ class PdfManager {
     this.data.numPages && setNumPages && setNumPages(this.data.numPages);
   };
 
-  get eventBus() {
-    if (!this.data) return undefined;
-    return this.data.eventBus;
-  }
-
-  get linkService() {
-    if (!this.data) return undefined;
-    return this.data.linkService;
-  }
-
-  get pdfViewer() {
-    if (!this.data) return undefined;
-    return this.data.pdfViewer;
-  }
-
-  get findController() {
-    if (!this.data) return undefined;
-    return this.data.findController;
-  }
-
-  get activeHighlight() {
-    if (!this.data) return undefined;
-    return this.data.activeHighlight;
-  }
-
-  get viewerElement() {
-    return this.data?.viewerElement;
-  }
-
-  get blobUrl() {
-    if (!this.data) return undefined;
-    return this.data.blobUrl;
-  }
-
-  get cancelInit() {
-    return this.data?.cancelInit;
-  }
-
-  get isPdfLoaded() {
-    return !!this.data;
-  }
+  get eventBus() { return this.data?.eventBus; }
+  get linkService() { return this.data?.linkService; }
+  get pdfViewer() { return this.data?.pdfViewer; }
+  get findController() { return this.data?.findController; }
+  get activeHighlight() { return this.data?.activeHighlight; }
+  get viewerElement() { return this.data?.viewerElement; }
+  get blobUrl() { return this.data?.blobUrl; }
+  get cancelInit() { return this.data?.cancelInit; }
+  get isPdfLoaded() { return !!this.data; }
 
   handleResize = () => {
     if (this.resizeTimeout) {
       clearTimeout(this.resizeTimeout);
     }
     this.resizeTimeout = setTimeout(() => {
-      if (this.pdfViewer) {
+      if (this.pdfViewer && (this.pdfViewer.currentScaleValue === 'page-width' || this.pdfViewer.currentScaleValue === 'auto')) {
         this.pdfViewer.currentScaleValue = 'page-width';
       }
     }, RESIZE_DEBOUNCE_TIME_MS);
@@ -230,36 +197,54 @@ class PdfManager {
 
   // @ts-ignore
   onPageRendered = ({ source, pageNumber }: { source: PDFPageView; pageNumber: number }) => {
-    console.log(`pagerendered: ${pageNumber}`);
     this.eventBus!.off('pagerendered', this.onPageRendered);
   };
 
   onPageChanging = ({ source, pageNumber, pageLabel, previous }: { source: any; pageNumber: number; pageLabel: string; previous: any }) => {
-    console.log('onPageChanging', source, pageNumber, pageLabel, previous);
     this.data?.setCurrentPageNumber && this.data.setCurrentPageNumber(pageNumber);
   };
 
   onPagesInit = ({ source }: { source: PDFViewer }) => {
-    this.pdfViewer!.currentScaleValue = 'page-width';
     const { pagesCount } = source;
-    console.log('pagesCount', pagesCount);
     this.data?.setNumPages && this.data.setNumPages(pagesCount);
     this.data && (this.data.numPages = pagesCount);
+
+    // === Apply Configuration ===
+    const config = this.data?.config || {};
+
+    if (this.pdfViewer) {
+        const { scale, rotation } = config;
+
+        if (scale) {
+             this.pdfViewer.currentScaleValue = scale.toString();
+        } else {
+             this.pdfViewer.currentScaleValue = 'page-width';
+        }
+
+        if (rotation !== undefined) {
+            this.pdfViewer.pagesRotation = rotation;
+        }
+    }
+
     this.eventBus!.off('pagesinit', this.onPagesInit);
   };
 
   onPagesDestroy = () => {
-    console.log('#######pagesdestroy called');
     this.cancelInit && clearTimeout(this.cancelInit);
   };
 
   onPagesLoaded = () => {
-    console.log(`pagesloaded`);
-    if (this.pdfViewer!.currentScaleValue !== 'page-width') {
-      this.pdfViewer!.currentScaleValue = 'page-width';
+    if (this.pdfViewer && !this.data?.config?.scale && this.pdfViewer.currentScaleValue !== 'page-width') {
+       this.pdfViewer.currentScaleValue = 'page-width';
     }
+
     this.viewerElement?.scrollTop && (this.viewerElement.scrollTop = 0);
-    this.data?.initialPageNo && this.handleGoToPage(this.data?.initialPageNo);
+
+    // Handle Page Number separately as it requires the document to be layout-ready
+    if (this.data?.config?.pageNumber) {
+        this.handleGoToPage(this.data.config.pageNumber);
+    }
+
     this.eventBus!.off('pagesloaded', this.onPagesLoaded);
   };
 
@@ -305,8 +290,6 @@ class PdfManager {
     numTextDivs: number;
     error: Error;
   }) => {
-    // @ts-ignore
-    console.log('onTextLayerRendered: ');
     const { textLayer } = source;
     if (textLayer) {
       textLayer?.highlighter?.textDivs.forEach((div: any) => {
@@ -321,7 +304,6 @@ class PdfManager {
       if (this.data && this.data.scrollingInProgress && firstPageNumber === pageNumber) {
         this.data.scrollingInProgress = false;
         // scrollIntoView = true;
-        console.log(`scrollIntoView set to true`);
       }
       const textToHighlight = this.activeHighlight[pageNumber - 1];
       let needleText = textToHighlight.replace(/[^a-zA-Z]/g, '');
