@@ -125,6 +125,24 @@
   align-items: center;
 }
 
+.zoomSelect {
+  height: 26px; /* Match button height roughly */
+  font-size: 13px;
+  border: 1px solid var(--custom-pdf-field-border-color, #bbb);
+  background-color: var(--custom-pdf-field-bg-color, white);
+  color: var(--custom-pdf-field-color, #060606);
+  border-radius: 3px;
+  padding: 0 4px;
+  margin: 0 5px;
+  outline: none;
+  cursor: pointer;
+  min-width: 100px; /* Ensure wide enough for text */
+}
+
+.zoomSelect:focus {
+  border-color: #0a84ff;
+}
+
 .toolbarZoomControl span {
   font-size: 15px;
   margin: 0 5px;

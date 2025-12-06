@@ -39,7 +39,7 @@ interface PdfData {
   setCurrentPageNumber?: Dispatch<SetStateAction<number>>;
   setCanGoToPreviousPage?: Dispatch<SetStateAction<boolean>>;
   setCanGoToNextPage?: Dispatch<SetStateAction<boolean>>;
-  setCurrentScale?: Dispatch<SetStateAction<number>>;
+  setScale?: Dispatch<SetStateAction<number | string>>;
   setCanZoomOut?: Dispatch<SetStateAction<boolean>>;
   setCanZoomIn?: Dispatch<SetStateAction<boolean>>;
 }
@@ -117,6 +117,7 @@ class PdfManager {
     this.eventBus!.on('pagesdestroy', this.onPagesDestroy);
     this.eventBus!.on('pagechanging', this.onPageChanging);
     this.eventBus!.on('textlayerrendered', this.onTextLayerRendered);
+    this.eventBus!.on('scalechanging', this.onScaleChanging);
 
     window.addEventListener('resize', this.handleResize);
   };
@@ -140,6 +141,7 @@ class PdfManager {
     this.eventBus?.off('pagerendered', this.onPageRendered);
     this.eventBus?.off('pagesloaded', this.onPagesLoaded);
     this.eventBus?.off('pagechanging', this.onPageChanging);
+    this.eventBus?.off('scalechanging', this.onScaleChanging);
   };
 
   registerHandlers = ({
@@ -147,7 +149,7 @@ class PdfManager {
     setCurrentPageNumber,
     setCanGoToPreviousPage,
     setCanGoToNextPage,
-    setCurrentScale,
+    setScale,
     setCanZoomOut,
     setCanZoomIn,
   }: {
@@ -155,7 +157,7 @@ class PdfManager {
     setCurrentPageNumber: Dispatch<SetStateAction<number>> | undefined;
     setCanGoToPreviousPage: Dispatch<SetStateAction<boolean>> | undefined;
     setCanGoToNextPage: Dispatch<SetStateAction<boolean>> | undefined;
-    setCurrentScale: Dispatch<SetStateAction<number>> | undefined;
+    setScale: Dispatch<SetStateAction<number | string>> | undefined;
     setCanZoomOut: Dispatch<SetStateAction<boolean>> | undefined;
     setCanZoomIn: Dispatch<SetStateAction<boolean>> | undefined;
   }) => {
@@ -167,7 +169,7 @@ class PdfManager {
     setCurrentPageNumber && (this.data.setCurrentPageNumber = setCurrentPageNumber);
     setCanGoToPreviousPage && (this.data.setCanGoToPreviousPage = setCanGoToPreviousPage);
     setCanGoToNextPage && (this.data.setCanGoToNextPage = setCanGoToNextPage);
-    setCurrentScale && (this.data.setCurrentScale = setCurrentScale);
+    setScale && (this.data.setScale = setScale);
     setCanZoomOut && (this.data.setCanZoomOut = setCanZoomOut);
     setCanZoomIn && (this.data.setCanZoomIn = setCanZoomIn);
 
@@ -200,7 +202,7 @@ class PdfManager {
     this.eventBus!.off('pagerendered', this.onPageRendered);
   };
 
-  onPageChanging = ({ source, pageNumber, pageLabel, previous }: { source: any; pageNumber: number; pageLabel: string; previous: any }) => {
+  onPageChanging = ({ pageNumber }: { source: any; pageNumber: number; pageLabel: string; previous: any }) => {
     this.data?.setCurrentPageNumber && this.data.setCurrentPageNumber(pageNumber);
   };
 
@@ -246,6 +248,18 @@ class PdfManager {
     }
 
     this.eventBus!.off('pagesloaded', this.onPagesLoaded);
+  };
+
+  onScaleChanging = (evt: { scale: number; presetValue: string }) => {
+    if (this.data?.setScale) {
+      // If there is a preset (like 'page-fit'), use that.
+      // Otherwise use the numeric scale (converted to percentage int).
+      if (evt.presetValue) {
+        this.data.setScale(evt.presetValue);
+      } else {
+        this.data.setScale(Math.floor(evt.scale * 100));
+      }
+    }
   };
 
   trackCharCounts = (divs: any[], firstChar: string, firstCharCount: number, lastChar: string, lastCharCount: number) => {
@@ -373,11 +387,11 @@ class PdfManager {
   };
 
   handleZoomOut = () => {
-    this.pdfViewer?.decreaseScale({ scaleFactor: 1 });
+    this.data?.pdfViewer?.decreaseScale();
   };
 
   handleZoomIn = () => {
-    this.pdfViewer?.increaseScale({ scaleFactor: 1 });
+    this.data?.pdfViewer?.increaseScale();
   };
 
   resetZoom = () => {
@@ -386,16 +400,17 @@ class PdfManager {
     }
   };
 
-  setCurrentScale(scale: number): void {
-    if (this.data?.pdfViewer) {
-      if (scale === 100) {
-        this.data.pdfViewer.currentScaleValue = 'page-width';
-      } else {
-        this.data.pdfViewer.currentScale = scale;
-        this.data.originalScale = scale;
-      }
+  setScale = (value: number | string): void => {
+    if (!this.data?.pdfViewer) return;
+
+    if (typeof value === 'string') {
+      // Handle presets: "auto", "page-fit", "page-width", "page-actual"
+      this.data.pdfViewer.currentScaleValue = value;
+    } else {
+      // Handle numeric percentage: 150 -> 1.5
+      this.data.pdfViewer.currentScale = value / 100;
     }
-  }
+  };
 }
 
 export default PdfManager;

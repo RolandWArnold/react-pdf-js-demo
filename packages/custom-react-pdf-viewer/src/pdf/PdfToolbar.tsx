@@ -5,6 +5,22 @@ import type { ToolbarProps } from './ToolbarInterface';
 // 1. Import the RENAMED CSS module
 import styles from '../css/PdfToolbar.module.css';
 
+const ZOOM_OPTIONS = [
+  { value: 'auto', label: 'Automatic Zoom' },
+  { value: 'page-actual', label: 'Actual Size' },
+  { value: 'page-fit', label: 'Page Fit' },
+  { value: 'page-width', label: 'Page Width' },
+  { value: 'custom', label: '---', disabled: true }, // Divider
+  { value: 50, label: '50%' },
+  { value: 75, label: '75%' },
+  { value: 100, label: '100%' },
+  { value: 125, label: '125%' },
+  { value: 150, label: '150%' },
+  { value: 200, label: '200%' },
+  { value: 300, label: '300%' },
+  { value: 400, label: '400%' },
+];
+
 export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   showFileName,
   fileName,
@@ -15,13 +31,12 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const [canGoToPreviousPage, setCanGoToPreviousPage] = useState(true);
   const [canGoToNextPage, setCanGoToNextPage] = useState(true);
-  const [currentScale, setCurrentScale] = useState(100);
+  const [scaleValue, setScaleValue] = useState<string | number>('auto');
+  const [currentScale, setScale] = useState(100);
   const [canZoomOut, setCanZoomOut] = useState(true);
   const [canZoomIn, setCanZoomIn] = useState(true);
   const [isToolbarRendered, setIsToolbarRendered] = useState<boolean>(false);
   const zoomRef = useRef<HTMLDivElement | null>(null);
-
-  // 2. ALL find bar refs are REMOVED
 
   const [inputValue, setInputValue] = useState(`${currentPageNumber}`);
 
@@ -39,7 +54,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
       setCurrentPageNumber,
       setCanGoToPreviousPage,
       setCanGoToNextPage,
-      setCurrentScale,
+      setScale: setScaleValue,
       setCanZoomOut,
       setCanZoomIn,
     });
@@ -47,7 +62,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
 
   useEffect(() => {
     setCurrentPageNumber(1);
-    setCurrentScale(100);
+    setScale(100);
   }, [pdfManager, fileName]);
 
   useEffect(() => {
@@ -82,7 +97,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
       if (zoomRef.current && pdfManager?.isPdfLoaded) {
         // only refit if user hasn’t manually set a numeric zoom
         if (pdfManager?.pdfViewer?.currentScaleValue === 'page-width') {
-          pdfManager.setCurrentScale(100);
+          pdfManager.setScale(100);
         }
         pdfManager?.resetZoom();
       }
@@ -111,17 +126,47 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
     }
   };
 
-  const handleZoomIn = () => {
-    pdfManager?.handleZoomIn();
-    setCurrentScale(Math.ceil(100 * 0.25 + currentScale));
+  const onScaleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    // Check if value is a number-string ("100") or a preset ("page-fit")
+    const numeric = parseFloat(val);
+    if (isNaN(numeric)) {
+      // It's a string preset
+      pdfManager?.setScale(val);
+      setScaleValue(val);
+    } else {
+      // It's a percentage
+      pdfManager?.setScale(numeric);
+      setScaleValue(numeric);
+    }
   };
 
-  const handleZoomOut = () => {
-    pdfManager?.handleZoomOut();
-    setCurrentScale(Math.ceil(currentScale - 100 * 0.25));
-  };
+  // Updated zoom handlers (manager handles the math now)
+  const handleZoomIn = () => pdfManager?.handleZoomIn();
+  const handleZoomOut = () => pdfManager?.handleZoomOut();
 
   const handleToggleFindBar = () => { console.log('toggle click', pdfManager); pdfManager?.toggleFindBar(); };
+
+  // Helper: If the current scaleValue isn't in our list (e.g. 117%),
+  // we should arguably add it dynamically or just let the select show "custom".
+  // For simplicity, we just pass the value. The browser will show the value
+  // if it matches an option, or blank if it doesn't.
+  // To fix "blank", we can append the current value to the list if missing.
+
+  // Create render options, ensuring current value is visible
+  const renderOptions = [...ZOOM_OPTIONS];
+  const isPreset = ZOOM_OPTIONS.some(z => z.value == scaleValue);
+
+  if (!isPreset && typeof scaleValue === 'number') {
+    // Add a temporary option for the weird zoom level (e.g. "117%")
+    renderOptions.push({ value: scaleValue, label: `${scaleValue}%` });
+    // Sort numbers so it looks nice? Optional.
+    renderOptions.sort((a, b) => {
+       if (typeof a.value === 'string') return -1;
+       if (typeof b.value === 'string') return 1;
+       return (a.value as number) - (b.value as number);
+    });
+  }
 
   return (
     <div className={styles.toolbarContainer} ref={toolbarRefInDom}>
@@ -151,11 +196,28 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
             </div>
 
             <div className={styles.toolbarZoomControl}>
-              <button onClick={handleZoomOut} disabled={!canZoomOut}>
+              <button onClick={handleZoomOut} disabled={!canZoomOut} title="Zoom Out">
                 -
               </button>
-              <span>{currentScale}%</span>
-              <button onClick={handleZoomIn} disabled={!canZoomIn}>
+
+              <select
+                className={styles.zoomSelect}
+                value={scaleValue}
+                onChange={onScaleChange}
+                aria-label="Zoom"
+              >
+                {renderOptions.map((opt, idx) => (
+                  <option
+                    key={`${opt.value}-${idx}`}
+                    value={opt.value}
+                    disabled={opt.disabled}
+                  >
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+
+              <button onClick={handleZoomIn} disabled={!canZoomIn} title="Zoom In">
                 +
               </button>
             </div>
