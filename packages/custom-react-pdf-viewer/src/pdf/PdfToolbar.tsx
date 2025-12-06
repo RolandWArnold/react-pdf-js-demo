@@ -2,6 +2,7 @@
 import React, { useEffect, useLayoutEffect, useState, useRef, useCallback } from 'react';
 import type { FunctionComponent } from 'react';
 import type { ToolbarProps } from './ToolbarInterface';
+import { RotateLeftIcon, RotateRightIcon } from './Icons';
 // 1. Import the RENAMED CSS module
 import styles from '../css/PdfToolbar.module.css';
 
@@ -168,7 +169,10 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
     });
   }
 
-  return (
+  const handleRotateCw = () => pdfManager?.rotateClockwise();
+  const handleRotateCcw = () => pdfManager?.rotateCounterClockwise();
+
+return (
     <div className={styles.toolbarContainer} ref={toolbarRefInDom}>
       <div className={styles.toolbarMain}>
         <div className={styles.toolbarFileInfo}>
@@ -180,7 +184,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
         {numPages > 0 && (
           <>
             <div className={styles.toolbarControl}>
-              <button onClick={pdfManager?.handlePreviousPage} disabled={!canGoToPreviousPage}>
+              <button onClick={pdfManager?.handlePreviousPage} disabled={!canGoToPreviousPage} title="Previous Page">
                 Prev
               </button>
               <input
@@ -190,7 +194,7 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
                 onKeyDown={handleKeyDown}
               />
               <span>/ {numPages}</span>
-              <button onClick={pdfManager?.handleNextPage} disabled={!canGoToNextPage}>
+              <button onClick={pdfManager?.handleNextPage} disabled={!canGoToNextPage} title="Next Page">
                 Next
               </button>
             </div>
@@ -221,7 +225,18 @@ export const PdfToolbar: FunctionComponent<ToolbarProps> = ({
                 +
               </button>
             </div>
+
             <div className={styles.toolbarRight}>
+              {/* <button onClick={handleRotateCcw} title="Rotate Counter-Clockwise">
+                <RotateLeftIcon />
+              </button>
+              <button onClick={handleRotateCw} title="Rotate Clockwise">
+                <RotateRightIcon />
+              </button> */}
+
+              {/* Divider */}
+              <div style={{ width: 1, height: 20, background: '#ccc', margin: '0 5px' }} />
+
               <button
                 onClick={handleToggleFindBar}
                 className={styles.toolbarFindToggle}

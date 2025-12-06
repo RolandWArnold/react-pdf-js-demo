@@ -386,6 +386,18 @@ class PdfManager {
     this.pdfViewer?.scrollPageIntoView({ pageNumber: index });
   };
 
+  rotateClockwise = () => {
+    if (this.pdfViewer) {
+      this.pdfViewer.pagesRotation += 90;
+    }
+  };
+
+  rotateCounterClockwise = () => {
+    if (this.pdfViewer) {
+      this.pdfViewer.pagesRotation -= 90;
+    }
+  };
+
   handleZoomOut = () => {
     this.data?.pdfViewer?.decreaseScale();
   };
